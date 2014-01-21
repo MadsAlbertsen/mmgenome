@@ -1,0 +1,22 @@
+Package: mmgenome
+Type: Package
+Title: Tools for extracting individual genomes from metagenomes
+Description: mmeta is a set of tools for individual extracting genomes from
+    metagenomes.
+Version: 0.1.0
+Date: 2014-01-20
+Author: Mads Albertsen
+Maintainer: Mads Albertsen <MadsAlbertsen85@gmail.com>
+Reference: Albertsen, M., Hugenholtz, P., Skarshewski, A., Nielsen, K. L.,
+    Tyson, G. W., & Nielsen, P. H. (2013). Genome sequences of rare, uncultured
+    bacteria obtained by differential coverage binning of multiple metagenomes.
+    Nature biotechnology, 31(6), 533-8. doi:10.1038/nbt.2579
+License: AGPL-3
+Depends:
+    alphahull,
+    grid,
+    ggplot2,
+    knitr,
+    vegan,
+    Biostrings,
+    igraph
