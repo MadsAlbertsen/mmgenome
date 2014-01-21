@@ -1,0 +1,46 @@
+General overview
+=======================================
+
+## Load data
+
+```{r Loaddata, message=FALSE, warning=FALSE, results='hide'}
+library("mmeta")
+knit('Load_data.Rmd', tangle=TRUE)
+source(file="Load_data.R")
+```
+
+## Initial overview of the data
+The function `calc.genome.stats` can be used to calculate basic statistics on the full dataset.
+```{r Overview - stats}
+sstats(d,e)
+```
+`tot.ess` is the total number of essential genes identified, where `uni.ess` is the number of unique essential genes. 
+
+For more pretty plots we subset the data.
+```{r subset}
+ds <- subset(d, length > 3000)
+```
+
+## Differential coverage plots
+
+The differential coverage plot is the starting point for most genome extractions.
+```{r S1_S2_phylum_plot, fig.height=8, fig.width=10, warning=F}
+ggplot(ds, aes(x = S1, y = S2, size = length, color = phylum)) + 
+  scale_x_log10() + 
+  scale_y_log10() + 
+  geom_point(alpha=0.1, color = 'black') +
+  geom_point(data=subset(ds, phylum != "NA"), shape = 1, alpha = 0.7) +
+  scale_size_area(name= "Scaffold length", max_size=20) +
+  guides(colour = guide_legend(override.aes = list(alpha = 1, size = 5, shape = 19)))
+```
+
+## GC coverage plots
+
+```{r S1S2_gc_phylum_plot, fig.height=8, fig.width=10, warning=F}
+ggplot(ds, aes(x = S1+S2, y = gc, size = length, color = phylum)) + 
+  scale_x_log10() + 
+  geom_point(alpha=0.1, color = 'black') +
+  geom_point(data=subset(ds, phylum != "NA"), shape = 1, alpha = 0.7) +
+  scale_size_area(name= "Scaffold length", max_size=20) +
+  guides(colour = guide_legend(override.aes = list(alpha = 1, size = 5, shape = 19)))
+```

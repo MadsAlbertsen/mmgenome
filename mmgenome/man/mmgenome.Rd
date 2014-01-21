@@ -21,6 +21,8 @@ Tools for extracting individual genomes from metagenomes
   \code{\link{merge_network}}: Merge connection network
   with scaffold information.  \item
   \code{\link{eduplicates}}: Identifies duplicated
-  essential single copy genes. }
+  essential single copy genes.  \item
+  \code{\link{extract_nodes}}: Extracts PE connected
+  scaffolds. }
 }
 
