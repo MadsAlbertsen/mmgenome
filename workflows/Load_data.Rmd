@@ -5,7 +5,7 @@ Load Data
 
 In case you havn't installed all the package, it can be installed via `install_github("MadsAlbertsen/mmgenome/mmgenome")` (reguires devtools).
 ```{r Load_packages, message=F,warning=FALSE}
-library("mmeta")
+library("mmgenome")
 options(scipen = 8)
 ```
 

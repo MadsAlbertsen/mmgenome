@@ -4,7 +4,7 @@ Genome extraction
 ## Load data
 
 ```{r Loaddata, message=FALSE, warning=FALSE, results='hide'}
-library("mmeta")
+library("mmgenome")
 knit('Load_data.Rmd', tangle=TRUE)
 source(file="Load_data.R")
 ```
