@@ -1,12 +1,12 @@
-#' Extracts a subset of scaffolds
+#' Extracts overview of essential genes at Phylum level
 #'
 #' A nice long description
 #'
 #' @usage ephylum(eg)
 #'
-#' @param eg Pre-formatted file of genomes and 
+#' @param eg Pre-formatted file of genomes and essential genes: data(eg)
 #' 
-#' @return A list with two objects. $plot a ggplot object, $table a table with summery data.
+#' @return A list with three objects. $plot a ggplot object, $table a table with summery data and $data with the data used for plotting.
 #' 
 #' @export
 #' @import ggplot2
@@ -15,6 +15,7 @@
 #' @author Mads Albertsen \email{MadsAlbertsen85@@gmail.com}
 #' @examples
 #' 
+#' data(eg)
 #' phylum_data <- ephylum(eg)
 #' phylum_data$plot
 #' phylum_data$table
@@ -46,7 +47,7 @@ ephylum <- function(eg){
     theme(axis.text.x = element_text(angle = 90, hjust = 1, vjust = .3)) +
     coord_flip()  
  
- out <- list(p, tPHMM) 
- names(out) <- c("plot", "table")
+ out <- list(p, tPHMM, emp) 
+ names(out) <- c("plot", "table", "data")
  return(out)
 }

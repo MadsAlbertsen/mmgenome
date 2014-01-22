@@ -1,0 +1,19 @@
+Stats on essential genes in reference genomes
+========================================================
+
+Load needed packages.
+```{r load packages}
+library("mmgenome")
+```
+
+Load all the reference data.
+```{r load data}
+data(eg)
+head(eg)
+```
+
+Generate phylum level data.
+```{r gen_phylum}
+
+```
+

@@ -14,6 +14,8 @@
 #'   \item \code{\link{merge_network}}: Merge connection network with scaffold information.
 #'   \item \code{\link{eduplicates}}: Identifies duplicated essential single copy genes.
 #'   \item \code{\link{extract_nodes}}: Extracts PE connected scaffolds.
+#'   \item \code{\link{especies}}: Reference data on essential genes.
+#'   \item \code{\link{ephylum}}: Reference data on essential genes on phylum level.
 #' }
 #'
 #' @docType package

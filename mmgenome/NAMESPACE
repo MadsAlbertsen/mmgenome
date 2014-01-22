@@ -1,6 +1,7 @@
 export(clean_tax)
 export(eduplicates)
 export(ephylum)
+export(especies)
 export(extract)
 export(extract_nodes)
 export(ggplot_locator)
