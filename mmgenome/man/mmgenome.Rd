@@ -23,6 +23,8 @@ Tools for extracting individual genomes from metagenomes
   \code{\link{eduplicates}}: Identifies duplicated
   essential single copy genes.  \item
   \code{\link{extract_nodes}}: Extracts PE connected
-  scaffolds. }
+  scaffolds.  \item \code{\link{especies}}: Reference data
+  on essential genes.  \item \code{\link{ephylum}}:
+  Reference data on essential genes on phylum level. }
 }
 
