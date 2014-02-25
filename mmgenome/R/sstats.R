@@ -18,7 +18,7 @@ sstats <- function(scaffolds, essential, ncov=2) {
   coverage <- list()
   for (i in 1:ncov){
     coverage[i] <- round(sum((scaffolds[,i+3]*scaffolds$length))/sum(scaffolds$length),1)
-    names(coverage)[i] <- paste("Coverage", i, sep="")
+    names(coverage)[i] <- names(scaffolds)[i+3]
   }
   coverage<-t(data.frame(coverage))
   total.length <- sum(scaffolds$length)
