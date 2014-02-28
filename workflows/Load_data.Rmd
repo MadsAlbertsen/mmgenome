@@ -11,6 +11,14 @@ options(scipen = 8)
 
 ## Load all data
 
+First check if the data has been generated before.
+```{r check_exists}
+if (file.exists("data.RData")){
+  load(file="data.RData")
+  stop("Data already generated, loading it directly!")  
+}
+```
+
 The data is loaded and a few of the data columns are renamed.
 ```{r Load_data}
 S1 <- read.csv("data/S1.csv", header = T)               
@@ -78,3 +86,11 @@ Custom color palette for gc coloring.
 rgb.p<- colorRampPalette(c('red','green','blue'))
 gc.trans<-adjustcolor(rgb.p(max(d$gc)-min(d$gc)),alpha.f=0.3)
 ```
+
+
+Remove temporary data frames and finally save the generated data for easy loading.
+```{r save}
+rm(list = c("S1","S2","a16S","a23S","cons.tax","ess","gc","kmer","network","t16S","t23S","rda","rgb.p","tax"))
+save.image(file="data.RData")
+```
+
