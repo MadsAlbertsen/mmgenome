@@ -13,7 +13,6 @@ Reference: Albertsen, M., Hugenholtz, P., Skarshewski, A., Nielsen, K. L.,
     Nature biotechnology, 31(6), 533-8. doi:10.1038/nbt.2579
 License: AGPL-3
 Depends:
-    alphahull (== 0.2-1),
     grid,
     ggplot2,
     knitr,
