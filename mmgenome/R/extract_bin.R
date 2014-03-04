@@ -1,8 +1,8 @@
-#' Extracts a subset of scaffolds
+#' Extracts a subset of scaffolds in a bin
 #'
 #' A nice long description
 #'
-#' @usage extract(data, seletion)
+#' @usage extract(data, selection)
 #'
 #' @param data The dataframe containing all data.
 #' @param selection The subspace to extract.
@@ -14,7 +14,7 @@
 #' @author Soren M. Karst \email{smk@@bio.aau.dk}
 #' @author Mads Albertsen \email{MadsAlbertsen85@@gmail.com}
 
-extract <-
+extract_bin <-
 function(data, selection){
   xname <- names(selection[1])
   yname <- names(selection[2])
