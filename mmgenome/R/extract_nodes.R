@@ -1,6 +1,6 @@
-#' Extract scaffolds connected by paired reads
+#' Extract all scaffolds connected by paired reads
 #'
-#' A nice long description
+#' A nice long description.
 #'
 #' @usage extract_nodes(original, subset)
 #'
@@ -13,7 +13,7 @@
 #' @author Soren M. Karst \email{smk@@bio.aau.dk}
 #' @author Mads Albertsen \email{MadsAlbertsen85@@gmail.com}
 #' 
-extract_nodes <- function (original, subset) {
+extract_nodes <- function (original = d, subset) {
   clusters<-as.numeric(as.character(unique(na.omit(subset$cluster))))
   original.clusters<-original[original$cluster %in% clusters,]
   nodes<-as.numeric(as.character(na.omit(original.clusters$vertex.id)))

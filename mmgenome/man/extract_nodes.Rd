@@ -1,6 +1,6 @@
 \name{extract_nodes}
 \alias{extract_nodes}
-\title{Extract scaffolds connected by paired reads}
+\title{Extract all scaffolds connected by paired reads}
 \usage{
 extract_nodes(original, subset)
 }
@@ -14,7 +14,7 @@ extract_nodes(original, subset)
 A list with nodes and scaffolds
 }
 \description{
-A nice long description
+A nice long description.
 }
 \author{
 Soren M. Karst \email{smk@bio.aau.dk}
