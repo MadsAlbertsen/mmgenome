@@ -16,14 +16,21 @@
 
 ggplot_locator <- function(p){
   pi <- ggplot_build(p)
-  x <- unlist(lapply(pi$data, function(l){l$x}))
-  y <- unlist(lapply(pi$data, function(l){l$y})) 
-  x <- x[!is.infinite(x)]
-  y <- y[!is.infinite(y)]
   n = 100
   d <- data.frame(matrix(as.numeric(), 0, 2))
   colnames(d) <- c(pi$plot$mapping$x, pi$plot$mapping$y)
-  
+  if (is.null(pi$panel$x_scales[[1]]$limits)){
+    x <- unlist(lapply(pi$data, function(l){l$x}))
+    x <- x[!is.infinite(x)]
+  } else {
+    x <- pi$panel$x_scales[[1]]$limits
+  }
+  if (is.null(pi$panel$y_scales[[1]]$limits)){
+    y <- unlist(lapply(pi$data, function(l){l$y}))
+    y <- y[!is.infinite(y)]
+  } else {
+    y <- pi$panel$y_scales[[1]]$limits
+  }
   for (i in 1:n){    
     seekViewport('panel.3-4-3-4', recording=TRUE) 
     pushViewport(dataViewport(x,y))
@@ -33,7 +40,6 @@ ggplot_locator <- function(p){
     d[i, ] <- as.numeric(tmp)
   }
   grid.polygon(x= unit(d[,1], "native"), y= unit(d[,2], "native"), gp=gpar(fill=NA))
-  
   if (pi$panel$x_scales[[1]]$trans$name == "log-10") d[,1] <- 10^(d[,1])
   if (pi$panel$y_scales[[1]]$trans$name == "log-10") d[,2] <- 10^(d[,2])
   show(paste(colnames(d)[1]," = ",list(round(d[,1],4))))
