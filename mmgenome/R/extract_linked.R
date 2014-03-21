@@ -19,7 +19,7 @@
 
 
 extract_linked <- function(subset, original = d, network = n, minimum = 5){
-  ns <- subset(network, (network$scaffold1 %in% subset$scaffold | network$scaffold2 %in% subset$scaffold) & network$connections > min)
+  ns <- subset(network, (network$scaffold1 %in% subset$scaffold | network$scaffold2 %in% subset$scaffold) & network$connections >= minimum)
   extract <- unique(c(ns$scaffold1, ns$scaffold2, subset$scaffold))
   out <- subset(original, original$scaffold %in% extract)
   return(out)
