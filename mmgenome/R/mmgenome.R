@@ -5,6 +5,8 @@
 #' @section Individual functions:
 #'
 #' \itemize{
+#'   \item \code{\link{mmplot}}: Default plot function.
+#'   \item \code{\link{mmplot_selction}}: Highlights a selection made with ggplot_locater on a mmplot.
 #'   \item \code{\link{ggplot_locator}}: Adds "locator" functionallity to plots made with ggplot2.
 #'   \item \code{\link{extract}}: Extracts a subset of scaffolds based on input from \code{\link{ggplot_locator}}.
 #'   \item \code{\link{sstats}}: An overview of key statistics of the scaffolds.
