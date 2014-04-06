@@ -2,7 +2,7 @@
 #'
 #' A nice long description
 #'
-#' @usage ephylum(eg)
+#' @usage mmref_phylum(eg)
 #'
 #' @param eg Pre-formatted file of genomes and essential genes: data(eg)
 #' 
@@ -16,11 +16,11 @@
 #' @examples
 #' 
 #' data(eg)
-#' phylum_data <- ephylum(eg)
+#' phylum_data <- mmref_phylum(eg)
 #' phylum_data$plot
 #' phylum_data$table
 
-ephylum <- function(eg){
+mmref_phylum <- function(eg){
   em <- melt(eg,id.vars=c(colnames(eg)[1:9]))
   colnames(em)[10:11] <- c("HMM", "Count")
   cHMM <- aggregate(Count ~ HMM, sum, data = em)

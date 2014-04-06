@@ -1,10 +1,11 @@
-#' Interactively extract points ggplot2 figures
+#' Interactively extract points from ggplot2 objects
 #'
 #' Adds "locator" functionallity to plots made with ggplot2
 #'
-#' @usage ggplot_locator(p)
+#' @usage mmplot_locator(p, round)
 #'
-#' @param p (required). A ggplot2 object.
+#' @param p (required) A ggplot2 object.
+#' @param nround number of digits
 #' 
 #' @return X and Y coordinates marked in the plot.
 #' 
@@ -14,7 +15,7 @@
 #' @author Soren M. Karst \email{smk@@bio.aau.dk}
 #' @author Mads Albertsen \email{MadsAlbertsen85@@gmail.com}
 
-ggplot_locator <- function(p){
+mmplot_locator <- function(p, nround=1){
   pi <- ggplot_build(p)
   x <- unlist(lapply(pi$data, function(l){l$x}))
   y <- unlist(lapply(pi$data, function(l){l$y})) 
@@ -36,7 +37,7 @@ ggplot_locator <- function(p){
   
   if (pi$panel$x_scales[[1]]$trans$name == "log-10") d[,1] <- 10^(d[,1])
   if (pi$panel$y_scales[[1]]$trans$name == "log-10") d[,2] <- 10^(d[,2])
-  show(paste(colnames(d)[1]," = ",list(round(d[,1],4))))
-  show(paste(colnames(d)[2]," = ",list(round(d[,2],4))))
+  show(paste(colnames(d)[1]," = ",list(round(d[,1],nround))))
+  show(paste(colnames(d)[2]," = ",list(round(d[,2],nround))))
   return(d)
 }

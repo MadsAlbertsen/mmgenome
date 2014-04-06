@@ -1,8 +1,8 @@
-\name{sstats}
-\alias{sstats}
+\name{mmstats}
+\alias{mmstats}
 \title{Calculates statistics on a set of scaffolds}
 \usage{
-sstats(scaffolds, essential, ncov)
+mmstats(scaffolds, essential, ncov)
 }
 \arguments{
   \item{scaffolds}{The dataframe containing all data on

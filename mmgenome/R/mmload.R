@@ -1,0 +1,105 @@
+#' Import wrapper for coverage files
+#'
+#' A nice long description.
+#'
+#' @usage mmimport_coverage(assembly, coverage, type)
+#'
+#' @param assembly The assembly.
+#' @param coverage A list of coverage datasets.
+#' @param type The type of coverage files either clc or simple (default: simple).
+#' @param pca Add pca analyis of tetranucleotide frequencies (default: T)
+#' 
+#' @return a dataframe with scaffold coverage, gc and lenght information. 
+#' 
+#' @export
+#' @import Biostrings
+#' @author Soren M. Karst \email{smk@@bio.aau.dk}
+#' @author Mads Albertsen \email{MadsAlbertsen85@@gmail.com}
+
+mmload <- function(assembly, coverage, coverage.type = "simple", pca = T, tax = NULL, tax.freq = 20, tax.clean = T, tax.expand = NULL, rRNA16S = NULL, rRNA23S = NULL, rRNA = "silva"){
+
+  if (coverage.type == "clc"){
+    for (i in 1:length(coverage)){  
+      temp <- cbind.data.frame(coverage[[i]]$Reference.sequence,coverage[[i]]$Average.coverage)
+      colnames(temp) <- c("scaffold", names(coverage)[i])
+      coverage[[i]] <- temp
+    }
+  }
+  
+  b <- cbind.data.frame(names(assembly), width(assembly), letterFrequency(assembly, letters = c("CG"), as.prob=T)*100)
+  colnames(b) <- c("scaffold","length","gc")
+  l <- c(list(b), coverage)
+  out <- Reduce(function(...) merge(..., all=T), l)
+  out[is.na(out)] <- 0
+  out$scaffold <- as.integer(as.character(out$scaffold))
+  out <- out[with(out, order(scaffold)), ]
+  
+  if (pca == T){
+    kmer_for<-oligonucleotideFrequency(assembly, 4, as.prob=T)
+    kmer_revC <- oligonucleotideFrequency(reverseComplement(assembly), 4, as.prob=T)
+    kmer <- (kmer_for + kmer_revC)/2*100
+    rda <- rda(kmer[,2:ncol(kmer)])
+    out<-cbind(out,scores(rda,choices=1:3)$sites)
+  }
+  
+  if (!is.null(tax)){
+      tax$phylum <- as.character(tax$phylum)
+      tax$class <- as.character(tax$class)
+      if (!is.null(tax.expand)){
+        for (i in 1:nrow(tax)){
+          if(tax$phylum[i] == tax.expand){
+            tax$phylum[i] <- tax$class[i]   
+          }
+        }        
+      }
+      
+      # Make some of the phyla names more pretty
+      if (tax.clean == TRUE){
+        tax$phylum<-gsub(" <phylum>", "", tax$phylum)
+        tax$phylum<-gsub("unclassified Bacteria", "Unclassified Bacteria", tax$phylum)
+        tax$phylum<-gsub("Fibrobacteres/Acidobacteria group", "Acidobacteria", tax$phylum)
+        tax$phylum<-gsub("Bacteroidetes/Chlorobi group", "Bacteroidetes", tax$phylum)
+        tax$phylum<-gsub("delta/epsilon subdivisions", "Deltaproteobacteria", tax$phylum)
+        tax$phylum<-gsub("Chlamydiae/Verrucomicrobia group", "Verrucomicrobia", tax$phylum)  
+      }
+      
+      tax<-subset(tax, phylum != "NA")
+      tax$phylum <- as.factor(tax$phylum)
+      tax$class <- as.factor(tax$class)  
+      
+      # Remove phyla seen less than X times
+      if (!is.null(tax.freq)){
+        uniquetaxa<-as.character(unique(tax$phylum)) 
+        for (i in 1:length(uniquetaxa)) {
+          tax.match <- which(tax$phylum==uniquetaxa[i]) 
+          no.occurences <- sum(tax$count[tax.match])
+          if (no.occurences < tax.freq) { 
+            tax$phylum[tax.match] <- NA
+          }
+        }     
+        tax<-subset(tax, phylum != "NA") 
+      }  
+      tax<-droplevels(tax)
+    out <- merge(out,tax[,c(1,2)], by = "scaffold", all = T)
+  }
+  
+   if (!is.null(rRNA16S)){
+     if (rRNA == "silva"){
+       temp <- sapply(rRNA16S$sequence_identifier, function (x) strsplit(as.character(x), "\\.", perl = T)[[1]][1])
+       temp <-cbind(temp,as.character(rRNA16S$lca_tax_slv))  
+       colnames(temp) <- c("scaffold","16S")
+       out <- merge(out, temp , by = "scaffold", all = T)
+     }
+   }
+    
+  if (!is.null(rRNA23S)){
+    if (rRNA == "silva"){
+      temp <- sapply(rRNA23S$sequence_identifier, function (x) strsplit(as.character(x), "\\.", perl = T)[[1]][1])
+      temp <-cbind(temp,as.character(rRNA23S$lca_tax_slv))  
+      colnames(temp) <- c("scaffold","23S")
+      out <- merge(out, temp , by = "scaffold", all = T)
+    }
+  }   
+  
+  return(out)
+}

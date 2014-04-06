@@ -1,8 +1,8 @@
-\name{eduplicates}
-\alias{eduplicates}
+\name{mmstats_duplicates}
+\alias{mmstats_duplicates}
 \title{Identifies dublicates essential genes}
 \usage{
-eduplicates(essential)
+mmstats_duplicates(essential)
 }
 \arguments{
   \item{essential}{The dataframe with information on

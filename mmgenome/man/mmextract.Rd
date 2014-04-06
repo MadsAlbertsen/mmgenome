@@ -1,8 +1,8 @@
-\name{extract}
-\alias{extract}
+\name{mmextract}
+\alias{mmextract}
 \title{Extracts a subset of scaffolds}
 \usage{
-extract(data, seletion)
+mmextract(data, seletion)
 }
 \arguments{
   \item{data}{The dataframe containing all data.}

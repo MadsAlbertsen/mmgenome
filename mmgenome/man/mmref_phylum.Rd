@@ -1,8 +1,8 @@
-\name{ephylum}
-\alias{ephylum}
+\name{mmref_phylum}
+\alias{mmref_phylum}
 \title{Extracts overview of essential genes at Phylum level}
 \usage{
-ephylum(eg)
+mmref_phylum(eg)
 }
 \arguments{
   \item{eg}{Pre-formatted file of genomes and essential
@@ -18,7 +18,7 @@ A nice long description
 }
 \examples{
 data(eg)
-phylum_data <- ephylum(eg)
+phylum_data <- mmref_phylum(eg)
 phylum_data$plot
 phylum_data$table
 }

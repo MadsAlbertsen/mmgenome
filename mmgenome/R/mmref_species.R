@@ -2,7 +2,7 @@
 #'
 #' A nice long description
 #'
-#' @usage especies(eg)
+#' @usage mmref_species(eg)
 #'
 #' @param eg Pre-formatted file of genomes and essential genes: data(eg)
 #' 
@@ -17,11 +17,11 @@
 #' 
 #' data(eg)
 #' eg_alpha <- subset(eg, Class == "Alphaproteobacteria")
-#' species_data <- especies(eg_alpha)
+#' species_data <- mmref_species(eg_alpha)
 #' species_data$plot
 #' speces_data$table[1,]
 
-especies <- function(eg){
+mmref_species <- function(eg){
   em <- melt(eg,id.vars=c(colnames(eg)[1:9]))
   colnames(em)[10:11] <- c("HMM", "Count")
   cHMM <- aggregate(Count ~ HMM, sum, data = em)
