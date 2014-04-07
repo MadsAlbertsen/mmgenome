@@ -20,7 +20,13 @@ mmextract <- function(data, selection){
   xr <- range(selection[xname])
   yr <- range(selection[yname])
   sel.hull <- ahull(selection, alpha=100000)
-  ds <- subset(data, data[xname] > min(xr) & data[xname] < max(xr) & data[yname] > min(yr) & data[yname] < max(yr))
+  ds <- subset(data$scaffolds, data$scaffolds[xname] > min(xr) & data$scaffolds[xname] < max(xr) & data$scaffolds[yname] > min(yr) & data$scaffolds[yname] < max(yr))
   in.selection <- apply(ds[c(xname, yname)],1,function(x){inahull(ahull.obj=sel.hull, p=x)})
-  return(ds[in.selection, ])
+  
+  out <- ds[in.selection, ]
+  es <- subset(data$essential, data$essential$scaffold %in% out$scaffold)
+  
+  outlist <- list(scaffolds = out, essential = es)  
+  return(outlist)  
+  
 }

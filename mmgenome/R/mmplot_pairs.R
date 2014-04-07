@@ -19,9 +19,9 @@ mmplot_pairs <- function(data, variables, color = "gc", nsize = 1){
   
   if(color == "gc"){
     rgb.c <- colorRampPalette(c("red", "green", "blue"))
-    rgb.a <- adjustcolor(rgb.c(max(data$gc)-min(data$gc)+1), alpha.f = 0.3)
+    rgb.a <- adjustcolor(rgb.c(max(data$scaffolds$gc)-min(data$scaffolds$gc)+1), alpha.f = 0.3)
     palette(rgb.a)
-    pairs(data[,variables], upper.panel=NULL, col = data$gc-min(data$gc), cex = sqrt(data$length)/75*nsize, pch=20)
+    pairs(data$scaffolds[,variables], upper.panel=NULL, col = data$scaffolds$gc-min(data$scaffolds$gc), cex = sqrt(data$scaffolds$length)/75*nsize, pch=20)
   }
   
   if(color == "phylum"){
@@ -29,20 +29,20 @@ mmplot_pairs <- function(data, variables, color = "gc", nsize = 1){
       hues = seq(15, 375, length=n+1)
       hcl(h=hues, l=65, c=100)[1:n]
     }
-    data$phylum <- factor(data$phylum, levels=c(levels(data$phylum),"None"))
-    data$phylum[is.na(data$phylum)] <- "None"
-    pal <- c(gg_color_hue(length(levels(data$phylum))-1),"#0000000D")
+    data$scaffolds$phylum <- factor(data$scaffolds$phylum, levels=c(levels(data$scaffolds$phylum),"None"))
+    data$scaffolds$phylum[is.na(data$scaffolds$phylum)] <- "None"
+    pal <- c(gg_color_hue(length(levels(data$scaffolds$phylum))-1),"#0000000D")
     palette(pal)
-    data <- data[with(data, order(rev(phylum))), ]
-    pairs(data[,variables], upper.panel=NULL, col = data$phylum, cex = sqrt(data$length)/75*nsize, pch=20)
+    data$scaffolds <- data$scaffolds[with(data$scaffolds, order(rev(phylum))), ]
+    pairs(data$scaffolds[,variables], upper.panel=NULL, col = data$scaffolds$phylum, cex = sqrt(data$scaffolds$length)/75*nsize, pch=20)
   }
   
   if(color != "gc" & color != "phylum"){
     rgb.c <- colorRampPalette(c("red", "green", "blue"))
     rgb.a <- adjustcolor(rgb.c(100), alpha.f = 0.5)
     palette(rgb.a)
-    diff <- log10(max(data[,color])+1) - log10(min(data[,color])+1)
-    tcol <- (log10(data[,color]+1) -log10(min(data[,color])+1)) * (99 / diff) +1
-    pairs(data[,variables], upper.panel=NULL, col = tcol, cex = sqrt(data$length)/75*nsize, pch=20)
+    diff <- log10(max(data$scaffolds[,color])+1) - log10(min(data$scaffolds[,color])+1)
+    tcol <- (log10(data$scaffolds[,color]+1) -log10(min(data$scaffolds[,color])+1)) * (99 / diff) +1
+    pairs(data$scaffolds[,variables], upper.panel=NULL, col = tcol, cex = sqrt(data$scaffolds$length)/75*nsize, pch=20)
   }  
 }

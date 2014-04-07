@@ -1,23 +1,40 @@
 \name{mmload}
 \alias{mmload}
-\title{Import wrapper for coverage files}
+\title{Data loading function}
 \usage{
-mmimport_coverage(assembly, coverage, type)
+mmload(assembly, coverage, essential, tax)
 }
 \arguments{
   \item{assembly}{The assembly.}
 
   \item{coverage}{A list of coverage datasets.}
 
-  \item{type}{The type of coverage files either clc or
-  simple (default: simple).}
+  \item{coverge.type}{The type of coverage files either clc
+  or simple (default: simple).}
+
+  \item{essential}{}
+
+  \item{tax}{}
+
+  \item{tax.freq}{}
+
+  \item{tax.expand}{}
+
+  \item{tax.clean}{}
 
   \item{pca}{Add pca analyis of tetranucleotide frequencies
   (default: T)}
+
+  \item{pca.ncomp}{}
+
+  \item{rRNA16S}{}
+
+  \item{rRNA23S}{}
+
+  \item{rRNA.type}{}
 }
 \value{
-a dataframe with scaffold coverage, gc and lenght
-information.
+A list with 2 dataframes: scaffolds and essential
 }
 \description{
 A nice long description.

@@ -20,11 +20,11 @@
 
 mmplot_network <- function(data, network, nconnections = 2, ewidth = 1, nsize = 1, labels = F, color = "phylum"){
 
-  snetwork <- subset(network, (network$scaffold1 %in% data$scaffold & network$scaffold2 %in% data$scaffold) & network$connections >= nconnections)
+  snetwork <- subset(network, (network$scaffold1 %in% data$scaffolds$scaffold & network$scaffold2 %in% data$scaffolds$scaffold) & network$connections >= nconnections)
   
   g <- graph.data.frame(snetwork, directed = F)
   
-  g.stats <- subset(data, data$scaffold %in% V(g)$name)
+  g.stats <- subset(data$scaffolds, data$scaffolds$scaffold %in% V(g)$name)
   g.stats <- g.stats[match(V(g)$name,g.stats$scaffold),]
   
   V(g)$size <- sqrt(g.stats$length)*0.1*nsize
@@ -43,7 +43,7 @@ mmplot_network <- function(data, network, nconnections = 2, ewidth = 1, nsize = 
       hues = seq(15, 375, length=n+1)
       hcl(h=hues, l=65, c=100)[1:n]
     }
-    palette(gg_color_hue(length(levels(data$phylum))))
+    palette(gg_color_hue(length(levels(data$scaffolds$phylum))))
     V(g)$color <- g.stats$phylum
   }
   

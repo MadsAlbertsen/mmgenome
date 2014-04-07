@@ -5,10 +5,9 @@
 mmexport(data, assembly, file)
 }
 \arguments{
-  \item{data}{The dataframe containing all data on
-  scaffolds.}
+  \item{data}{The dataframe containing all data.}
 
-  \item{assembly}{The assembly.}
+  \item{assembly}{The assembly}
 
   \item{file}{Name of output file.}
 }

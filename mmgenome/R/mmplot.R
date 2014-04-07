@@ -20,21 +20,21 @@
 
 mmplot <- function(data, x, y, logx=F, logy=F, color = "phylum"){
   if (color == "phylum"){
-    p <- ggplot(data=data, aes_string(x = x, y = y, size = "length", color = "phylum")) + 
+    p <- ggplot(data=data$scaffolds, aes_string(x = x, y = y, size = "length", color = "phylum")) + 
       geom_point(alpha=0.1, color = 'black') +
-      geom_point(data=subset(data, phylum != "NA"), shape = 1, alpha = 0.7) +
+      geom_point(data=subset(data$scaffolds, phylum != "NA"), shape = 1, alpha = 0.7) +
       scale_size_area(name= "Scaffold length", max_size=20) +
       guides(colour = guide_legend(override.aes = list(alpha = 1, size = 5, shape = 19)))
   }
   if (color == "gc"){
-    p <- ggplot(data=data, aes_string(x = x, y = y, size = "length", color = "gc")) +       
+    p <- ggplot(data=data$scaffolds, aes_string(x = x, y = y, size = "length", color = "gc")) +       
       geom_point(alpha = 0.3) +
       scale_size_area(name = "Scaffold length", max_size = 20) +
       scale_colour_gradientn(colours = c("red", "green", "blue"))
   }
   if(color != "gc" & color != "phylum"){
     options(digits=2)
-    p <- ggplot(data=data, aes_string(x = x, y = y, size = "length", color = color)) +       
+    p <- ggplot(data=data$scaffolds, aes_string(x = x, y = y, size = "length", color = color)) +       
       geom_point(alpha = 0.3) +
       scale_size_area(name = "Scaffold length", max_size = 20) +
       scale_colour_gradientn(colours = c("red", "green", "blue"), trans = "log")

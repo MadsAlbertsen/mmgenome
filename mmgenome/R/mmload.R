@@ -1,23 +1,33 @@
-#' Import wrapper for coverage files
+#' Data loading function
 #'
 #' A nice long description.
 #'
-#' @usage mmimport_coverage(assembly, coverage, type)
+#' @usage mmload(assembly, coverage, essential, tax)
 #'
 #' @param assembly The assembly.
 #' @param coverage A list of coverage datasets.
-#' @param type The type of coverage files either clc or simple (default: simple).
+#' @param coverge.type The type of coverage files either clc or simple (default: simple).
+#' @param essential 
+#' @param tax
+#' @param tax.freq
+#' @param tax.expand
+#' @param tax.clean
 #' @param pca Add pca analyis of tetranucleotide frequencies (default: T)
+#' @param pca.ncomp
+#' @param rRNA16S
+#' @param rRNA23S
+#' @param rRNA.type
 #' 
-#' @return a dataframe with scaffold coverage, gc and lenght information. 
+#' @return A list with 2 dataframes: scaffolds and essential
 #' 
 #' @export
 #' @import Biostrings
 #' @author Soren M. Karst \email{smk@@bio.aau.dk}
 #' @author Mads Albertsen \email{MadsAlbertsen85@@gmail.com}
 
-mmload <- function(assembly, coverage, coverage.type = "simple", pca = T, tax = NULL, tax.freq = 20, tax.clean = T, tax.expand = NULL, rRNA16S = NULL, rRNA23S = NULL, rRNA = "silva"){
+mmload <- function(assembly, coverage, coverage.type = "simple", essential, pca = T, pca.ncomp = 3, tax = NULL, tax.freq = 20, tax.clean = T, tax.expand = NULL, rRNA16S = NULL, rRNA23S = NULL, rRNA.type = "silva"){
 
+##### Load coverage, gc and length #####
   if (coverage.type == "clc"){
     for (i in 1:length(coverage)){  
       temp <- cbind.data.frame(coverage[[i]]$Reference.sequence,coverage[[i]]$Average.coverage)
@@ -33,15 +43,19 @@ mmload <- function(assembly, coverage, coverage.type = "simple", pca = T, tax = 
   out[is.na(out)] <- 0
   out$scaffold <- as.integer(as.character(out$scaffold))
   out <- out[with(out, order(scaffold)), ]
-  
+
+##### Calculate PCA on tetranucleotide frequencies #####
+
   if (pca == T){
     kmer_for<-oligonucleotideFrequency(assembly, 4, as.prob=T)
     kmer_revC <- oligonucleotideFrequency(reverseComplement(assembly), 4, as.prob=T)
     kmer <- (kmer_for + kmer_revC)/2*100
     rda <- rda(kmer[,2:ncol(kmer)])
-    out<-cbind(out,scores(rda,choices=1:3)$sites)
+    out<-cbind(out,scores(rda,choices=1:pca.ncomp)$sites)
   }
-  
+
+##### Load and clean the taxonomic classification #####
+
   if (!is.null(tax)){
       tax$phylum <- as.character(tax$phylum)
       tax$class <- as.character(tax$class)
@@ -82,9 +96,11 @@ mmload <- function(assembly, coverage, coverage.type = "simple", pca = T, tax = 
       tax<-droplevels(tax)
     out <- merge(out,tax[,c(1,2)], by = "scaffold", all = T)
   }
-  
+
+##### Load rRNA taxonomic classifications #####
+
    if (!is.null(rRNA16S)){
-     if (rRNA == "silva"){
+     if (rRNA.type == "silva"){
        temp <- sapply(rRNA16S$sequence_identifier, function (x) strsplit(as.character(x), "\\.", perl = T)[[1]][1])
        temp <-cbind(temp,as.character(rRNA16S$lca_tax_slv))  
        colnames(temp) <- c("scaffold","16S")
@@ -93,13 +109,13 @@ mmload <- function(assembly, coverage, coverage.type = "simple", pca = T, tax = 
    }
     
   if (!is.null(rRNA23S)){
-    if (rRNA == "silva"){
+    if (rRNA.type == "silva"){
       temp <- sapply(rRNA23S$sequence_identifier, function (x) strsplit(as.character(x), "\\.", perl = T)[[1]][1])
       temp <-cbind(temp,as.character(rRNA23S$lca_tax_slv))  
       colnames(temp) <- c("scaffold","23S")
       out <- merge(out, temp , by = "scaffold", all = T)
     }
-  }   
-  
-  return(out)
+  }     
+  outlist <- list(scaffolds = out, essential = ess)
+  return(outlist)
 }

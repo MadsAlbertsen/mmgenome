@@ -1,12 +1,11 @@
 \name{mmstats_duplicates}
 \alias{mmstats_duplicates}
-\title{Identifies dublicates essential genes}
+\title{Identifies duplicates essential genes}
 \usage{
-mmstats_duplicates(essential)
+mmstats_duplicates(data)
 }
 \arguments{
-  \item{essential}{The dataframe with information on
-  essential genes.}
+  \item{data}{The dataframe.}
 }
 \value{
 A overview of duplicated essential genes and their parrent

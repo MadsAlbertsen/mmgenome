@@ -24,6 +24,8 @@ Tools for extracting individual genomes from metagenomes
   essential single copy genes.  \item
   \code{\link{mmref_especies}}: Reference data on essential
   genes.  \item \code{\link{mmref_ephylum}}: Reference data
-  on essential genes on phylum level. }
+  on essential genes on phylum level.  \item
+  \code{\link{mmexport}}: Export selected scaffolds to
+  fasta file. }
 }
 

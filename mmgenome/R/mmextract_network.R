@@ -18,10 +18,10 @@
 #' 
 
 mmextract_network <- function(subset, network, original = d, nconnections = 2, type = "direct"){
-
+  
   if (type == "direct"){
-    ns <- subset(network, (network$scaffold1 %in% subset$scaffold | network$scaffold2 %in% subset$scaffold) & network$connections >= nconnections)
-    out <- subset(original, original$scaffold %in% ns$scaffold1 | original$scaffold %in% ns$scaffold2 | original$scaffold %in% subset$scaffold)
+    ns <- subset(network, (network$scaffold1 %in% subset$scaffolds$scaffold | network$scaffold2 %in% subset$scaffolds$scaffold) & network$connections >= nconnections)
+    out <- subset(original$scaffolds, original$scaffolds$scaffold %in% ns$scaffold1 | original$scaffolds$scaffold %in% ns$scaffold2 | original$scaffolds$scaffold %in% subset$scaffolds$scaffold)
   }
   
   if (type == "complete"){
@@ -32,8 +32,12 @@ mmextract_network <- function(subset, network, original = d, nconnections = 2, t
     colnames(clusters) <- c("scaffold", "cluster")  
     ext.clusters <- subset(clusters, clusters$scaffold %in% subset$scaffold)
     ext.scaffolds <- subset(clusters, clusters$cluster %in% ext.clusters$cluster)
-    out <- subset(original, original$scaffold %in% subset$scaffold | original$scaffold %in% ext.scaffolds$scaffold)
+    out <- subset(original$scaffolds, original$scaffolds$scaffold %in% subset$scaffold | original$scaffolds$scaffold %in% ext.scaffolds$scaffold)
   }
 
-  return(out)  
+  es <- subset(original$essential, original$essential$scaffold %in% out$scaffold)
+  
+  outlist <- list(scaffolds = out, essential = es)
+  
+  return(outlist)  
 }
