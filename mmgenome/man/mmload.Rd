@@ -5,33 +5,40 @@
 mmload(assembly, coverage, essential, tax)
 }
 \arguments{
-  \item{assembly}{The assembly.}
+  \item{assembly}{(required) The assembly.}
 
-  \item{coverage}{A list of coverage datasets.}
+  \item{coverage}{(required) A list of coverage datasets.}
+
+  \item{essential}{(required) A dataframe with information
+  on essential genes.}
+
+  \item{tax}{(required) A dataframe with taxonomic
+  classification.}
 
   \item{coverge.type}{The type of coverage files either clc
   or simple (default: simple).}
 
-  \item{essential}{}
+  \item{tax.freq}{Remove phyla seen less than X times
+  (default: 20).}
 
-  \item{tax}{}
+  \item{tax.expand}{Use class level assignments for
+  specific phyla.}
 
-  \item{tax.freq}{}
-
-  \item{tax.expand}{}
-
-  \item{tax.clean}{}
+  \item{tax.clean}{Clean up some of the phyla names
+  (default: T)}
 
   \item{pca}{Add pca analyis of tetranucleotide frequencies
   (default: T)}
 
-  \item{pca.ncomp}{}
+  \item{pca.ncomp}{Number of principal components to return
+  (default: 3).}
 
-  \item{rRNA16S}{}
+  \item{rRNA16S}{16S taxonomic information.}
 
-  \item{rRNA23S}{}
+  \item{rRNA23S}{23S taxonomic information.}
 
-  \item{rRNA.type}{}
+  \item{rRNA.type}{Currently only supports "silva" .csv
+  files.}
 }
 \value{
 A list with 2 dataframes: scaffolds and essential

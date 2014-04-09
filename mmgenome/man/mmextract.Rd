@@ -8,6 +8,8 @@ mmextract(data, seletion)
   \item{data}{The dataframe containing all data.}
 
   \item{selection}{The subspace to extract.}
+
+  \item{minlength}{Minimum scaffold length.}
 }
 \value{
 The subset of scaffolds in the original dataframe within

@@ -10,6 +10,7 @@
 #' @param logx log10 scale the x-axis (default True)
 #' @param logy log10 scale the y-axis (default True)
 #' @param color Color by "phylum", "gc" or a coverage dataset (default: phylum)
+#' @param minlength Minimum length of plotted scaffolds.
 #' 
 #' @return a ggplot2 object
 #' 
@@ -18,7 +19,11 @@
 #' @author Soren M. Karst \email{smk@@bio.aau.dk}
 #' @author Mads Albertsen \email{MadsAlbertsen85@@gmail.com}
 
-mmplot <- function(data, x, y, logx=F, logy=F, color = "phylum"){
+mmplot <- function(data, x, y, logx=F, logy=F, color = "phylum", minlength = NULL){
+  if (!is.null(minlength)){
+    data$scaffolds <- subset(data$scaffolds, length >= minlength)
+    data$essential <- subset(data$essetinal, data$essential$scaffold %in% data$scaffolds$scaffold)    
+  }
   if (color == "phylum"){
     p <- ggplot(data=data$scaffolds, aes_string(x = x, y = y, size = "length", color = "phylum")) + 
       geom_point(alpha=0.1, color = 'black') +

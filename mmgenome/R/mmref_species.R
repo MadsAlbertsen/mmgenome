@@ -10,7 +10,7 @@
 #' 
 #' @export
 #' @import ggplot2
-#' @import reshape
+#' @import reshape2
 #' @author Soren M. Karst \email{smk@@bio.aau.dk}
 #' @author Mads Albertsen \email{MadsAlbertsen85@@gmail.com}
 #' @examples

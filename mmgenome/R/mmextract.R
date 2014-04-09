@@ -6,6 +6,7 @@
 #'
 #' @param data The dataframe containing all data.
 #' @param selection The subspace to extract.
+#' @param minlength Minimum scaffold length.
 #' 
 #' @return The subset of scaffolds in the original dataframe within the defined selection.
 #' 
@@ -14,7 +15,11 @@
 #' @author Soren M. Karst \email{smk@@bio.aau.dk}
 #' @author Mads Albertsen \email{MadsAlbertsen85@@gmail.com}
 
-mmextract <- function(data, selection){
+mmextract <- function(data, selection, minlength=NULL){
+  #if (!is.null(minlength)){
+  #  data$scaffolds <- subset(data$scaffolds, length >= minlength)
+  #  data$essential <- subset(data$essetinal, data$essential$scaffold %in% data$scaffolds$scaffold)    
+  #}  
   xname <- names(selection[1])
   yname <- names(selection[2])
   xr <- range(selection[xname])

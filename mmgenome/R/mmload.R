@@ -4,19 +4,19 @@
 #'
 #' @usage mmload(assembly, coverage, essential, tax)
 #'
-#' @param assembly The assembly.
-#' @param coverage A list of coverage datasets.
+#' @param assembly (required) The assembly.
+#' @param coverage (required) A list of coverage datasets.
+#' @param essential (required) A dataframe with information on essential genes. 
+#' @param tax (required) A dataframe with taxonomic classification.
 #' @param coverge.type The type of coverage files either clc or simple (default: simple).
-#' @param essential 
-#' @param tax
-#' @param tax.freq
-#' @param tax.expand
-#' @param tax.clean
+#' @param tax.freq Remove phyla seen less than X times (default: 20).
+#' @param tax.expand Use class level assignments for specific phyla.
+#' @param tax.clean Clean up some of the phyla names (default: T)
 #' @param pca Add pca analyis of tetranucleotide frequencies (default: T)
-#' @param pca.ncomp
-#' @param rRNA16S
-#' @param rRNA23S
-#' @param rRNA.type
+#' @param pca.ncomp Number of principal components to return (default: 3).
+#' @param rRNA16S 16S taxonomic information.
+#' @param rRNA23S 23S taxonomic information.
+#' @param rRNA.type Currently only supports "silva" .csv files.
 #' 
 #' @return A list with 2 dataframes: scaffolds and essential
 #' 
@@ -116,6 +116,7 @@ mmload <- function(assembly, coverage, coverage.type = "simple", essential, pca 
       out <- merge(out, temp , by = "scaffold", all = T)
     }
   }     
+  colnames(ess) = c("scaffold","orf","hmm.id")
   outlist <- list(scaffolds = out, essential = ess)
   return(outlist)
 }

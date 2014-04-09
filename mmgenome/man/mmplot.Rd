@@ -17,6 +17,8 @@ mmplot(data, x, y, logx, logy, color)
 
   \item{color}{Color by "phylum", "gc" or a coverage
   dataset (default: phylum)}
+
+  \item{minlength}{Minimum length of plotted scaffolds.}
 }
 \value{
 a ggplot2 object
