@@ -33,12 +33,7 @@ mmload(assembly, coverage, essential, tax)
   \item{pca.ncomp}{Number of principal components to return
   (default: 3).}
 
-  \item{rRNA16S}{16S taxonomic information.}
-
-  \item{rRNA23S}{23S taxonomic information.}
-
-  \item{rRNA.type}{Currently only supports "silva" .csv
-  files.}
+  \item{other}{A list of additional datasets.}
 }
 \value{
 A list with 2 dataframes: scaffolds and essential

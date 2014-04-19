@@ -2,24 +2,23 @@
 \alias{mmplot_network}
 \title{Plots connected scaffolds in a network graph}
 \usage{
-mmplot_network(data, network, nconnections, ewidth, nsize, labels, color)
+mmplot_network(data, network)
 }
 \arguments{
-  \item{data}{The dataframe with the network to be
-  plotted.}
+  \item{data}{(required) The dataframe with the network to
+  be plotted.}
 
-  \item{network}{A network file with connections between
-  scaffolds.}
+  \item{network}{(required) A network file with connections
+  between scaffolds.}
 
-  \item{nconnections}{The minimum number of connections.}
+  \item{nconnections}{The minimum number of connections
+  (default: 2).}
 
-  \item{ewidth}{Scale the width of edges by connections.}
+  \item{color}{Color by gc, phylum or a specific coverage
+  dataset (default: "gc").}
 
-  \item{nsize}{Scale the size of nodes by length.}
-
-  \item{labels}{If scaffold names are to be plotted.}
-
-  \item{color}{Color by gc, phylum or coverage.}
+  \item{labels}{If scaffold names are to be plotted
+  (default: F).}
 }
 \value{
 An igraph network plot.

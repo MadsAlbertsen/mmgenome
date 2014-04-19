@@ -13,7 +13,7 @@
 #' @author Mads Albertsen \email{MadsAlbertsen85@@gmail.com}
 
 mmstats_duplicates <- function (data) {
-  dup<-essential[which(duplicated(data$essential$hmm.id) | duplicated(data$essential$hmm.id, fromLast=TRUE)),] 
+  dup<-data$essential[which(duplicated(data$essential$hmm.id) | duplicated(data$essential$hmm.id, fromLast=TRUE)),] 
   dup <- dup[order(dup$hmm.id),c(1,3)]
   return(dup)
 }

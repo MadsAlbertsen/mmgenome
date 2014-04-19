@@ -2,14 +2,15 @@
 \alias{mmplot}
 \title{Wraps ggplot2 for pretty default plots}
 \usage{
-mmplot(data, x, y, logx, logy, color)
+mmplot(data, x, y)
 }
 \arguments{
-  \item{data}{A dataframe with scaffold information.}
+  \item{data}{(required) A dataframe with scaffold
+  information.}
 
-  \item{x}{x-axis variable.}
+  \item{x}{(required) x-axis variable.}
 
-  \item{y}{y-axis variable.}
+  \item{y}{(required) y-axis variable.}
 
   \item{logx}{log10 scale the x-axis (default True)}
 
@@ -19,6 +20,18 @@ mmplot(data, x, y, logx, logy, color)
   dataset (default: phylum)}
 
   \item{minlength}{Minimum length of plotted scaffolds.}
+
+  \item{network}{Network used to plot connections between
+  scaffolds.}
+
+  \item{nconnections}{Minimum number of connections to plot
+  (default: 0).}
+
+  \item{duplicates}{Mark scaffolds with duplicated
+  essential genes (default: F)}
+
+  \item{labels}{If scaffold names are to be plotted
+  (default: F)}
 }
 \value{
 a ggplot2 object

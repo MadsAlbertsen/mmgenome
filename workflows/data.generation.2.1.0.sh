@@ -1,28 +1,27 @@
 #!/bin/bash
 
-##### Description
-# This small shell script wraps the data generation for R in Albertsen et. al., 2013
+### Description
+# This small shell script wraps the default data generation for the mmgenome workflow
 
-##### Needed input files
+### Needed input files
 # Fasta file with all assembled scaffolds (keep the naming as >1, >2 etc): assembly.fa
 
-##### Needed software
+### Needed software
 # Prodigal
 # HMMER 3.0
 # BLAST
 # MEGAN
 # Perl scripts from : git clone https://github.com/MadsAlbertsen/mmgenome.git        
 
+### Version history
+##### 2.1.0
+# Renamed the essential gene output file
+##### 2.0.0
+# Removed GC calculation as it is now done through R
+# Removed Tetranucleotide calculation as it is now done through R
+
 clear
-echo "---Metagenomics workflow script v.2.0.0---"
-
-echo ""
-echo "Calculating tetranucleotide frequency"
-perl mmgenome/scripts/calc.kmerfreq.pl -i assembly.fa -o assembly.kmer.tab
-
-echo ""
-echo "Calculating gc content"
-perl mmgenome/scripts/calc.gc.pl -i assembly.fa -o assembly.gc.tab
+echo "---Metagenomics workflow script v.2.1.0---"
 
 echo ""
 echo "Finding essential genes - Predicting proteins (Prodigal)"
@@ -32,7 +31,8 @@ cut -f1 -d " " temp.orfs.faa > assembly.orfs.faa
 echo ""
 echo "Finding essential genes - running HMM search"
 hmmsearch --tblout assembly.hmm.orfs.txt --cut_tc --notextw mmgenome/scripts/essential.hmm assembly.orfs.faa > hmm.temp.txt
-tail -n+4  assembly.hmm.orfs.txt | sed 's/ * / /g' | cut -f1,4 -d " " | sed 's/_/ /' > assembly.orfs.hmm.id.txt
+echo "scaffold orf hmm.id" > essential.txt
+tail -n+4  assembly.hmm.orfs.txt | sed 's/ * / /g' | cut -f1,4 -d " " | sed 's/_/ /' >> essential.txt
 grep -v "#" assembly.hmm.orfs.txt | cut -f1 -d " " > list.of.positive.orfs.txt
 perl mmgenome/scripts/extract.using.header.list.pl -l list.of.positive.orfs.txt -s assembly.orfs.faa -o assembly.orfs.hmm.faa
 
@@ -63,4 +63,3 @@ rm assembly.hmm.orfs.txt
 
 echo ""
 echo "done"
-

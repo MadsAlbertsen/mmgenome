@@ -30,7 +30,7 @@ mmextract_network <- function(subset, network, original = d, nconnections = 2, t
     g.clust <- clusters(g)
     clusters <- cbind.data.frame(V(g)$name,g.clust$membership)
     colnames(clusters) <- c("scaffold", "cluster")  
-    ext.clusters <- subset(clusters, clusters$scaffold %in% subset$scaffold)
+    ext.clusters <- subset(clusters, clusters$scaffold %in% subset$scaffolds$scaffold)
     ext.scaffolds <- subset(clusters, clusters$cluster %in% ext.clusters$cluster)
     out <- subset(original$scaffolds, original$scaffolds$scaffold %in% subset$scaffold | original$scaffolds$scaffold %in% ext.scaffolds$scaffold)
   }
