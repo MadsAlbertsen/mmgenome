@@ -17,6 +17,8 @@ mmplot_network(data, network)
   \item{color}{Color by gc, phylum or a specific coverage
   dataset (default: "gc").}
 
+  \item{log.color}{log10 scale the colors (default: F)}
+
   \item{labels}{If scaffold names are to be plotted
   (default: F).}
 }

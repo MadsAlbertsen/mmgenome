@@ -1,13 +1,16 @@
-#' Generates a pairs plot
+#' Generates a ggplot2 style pairs plot
 #'
 #' A nice long description
 #'
 #' @usage mmplot_pairs(data, variables, color, nsize)
 #'
-#' @param data The dataframe to plot.
-#' @param variables The vaiables to plot as a list.
+#' @param data (required) The dataframe to plot.
+#' @param variables (required) The vaiables to plot as a list.
 #' @param color Coloring of the plot (default: gc)
-#' @param nsize Resize the points (default: 1)
+#' @param minlength Minimum length of the plotted scaffolds.
+#' @param log A vector of variables to log scale.
+#' @param log.color Log scale the color (default: F)
+#' @param resize Rescale the size of the scaffolds (default: 1)
 #' 
 #' @return A pairs plot object.
 #' 
@@ -15,34 +18,54 @@
 #' @author Soren M. Karst \email{smk@@bio.aau.dk}
 #' @author Mads Albertsen \email{MadsAlbertsen85@@gmail.com}
 
-mmplot_pairs <- function(data, variables, color = "gc", nsize = 1){
+mmplot_pairs <- function(data, variables, color = "gc", log.color = F, log = NULL, minlength = NULL, resize = 1){  
   
-  if(color == "gc"){
-    rgb.c <- colorRampPalette(c("red", "green", "blue"))
-    rgb.a <- adjustcolor(rgb.c(max(data$scaffolds$gc)-min(data$scaffolds$gc)+1), alpha.f = 0.3)
-    palette(rgb.a)
-    pairs(data$scaffolds[,variables], upper.panel=NULL, col = data$scaffolds$gc-min(data$scaffolds$gc), cex = sqrt(data$scaffolds$length)/75*nsize, pch=20)
-  }
+  ## Make a blank plot
+  temp <- list()
+  emp <- data.frame(x = 0, y = 0)
   
-  if(color == "phylum"){
-    gg_color_hue <- function(n) {
-      hues = seq(15, 375, length=n+1)
-      hcl(h=hues, l=65, c=100)[1:n]
+  pblank <-  ggplot(emp, aes(x,y)) + 
+    geom_blank() +
+    theme_bw() +
+    theme(panel.grid.major=element_blank(), 
+          panel.grid.minor=element_blank(), 
+          axis.text.x=element_blank(),
+          axis.text.y=element_blank(),
+          axis.title.x=element_blank(),
+          axis.title.y=element_blank(),
+          axis.ticks=element_blank(),
+          panel.border=element_blank())
+  
+  temp <- list()
+  
+  ## Iterate through the different combinations of plots
+  
+  for (i in 1:length(variables)){
+    for (j in 1:length(variables)){
+      if (i < j){
+        p <- mmplot(data = data, x = variables[j], y = variables[i], color = color, log.color = log.color, minlength = minlength, resize = resize) + theme(legend.position = "none") + theme(plot.margin=unit(c(0.1,0.1,0,0),"cm"), panel.grid.minor=element_blank(), panel.grid.major=element_blank(), axis.title.x=element_blank(), axis.title.y=element_blank())
+        if(!is.null(log)){
+          if(variables[j] %in% log & !(variables[i] %in% log)){
+            p <- p + scale_x_log10()
+          }
+          if(variables[i] %in% log & !(variables[j] %in% log)){
+            p <- p + scale_y_log10()
+          }
+          if(variables[i] %in% log & variables[j] %in% log){
+            p <- p + scale_x_log10() + scale_y_log10()
+          }
+        }
+      }    
+      if (i == j){ 
+        p <- pblank + geom_text(label=variables[i], size = 10)
+      }
+      if(i > j){
+        p <- pblank 
+      }
+      plotnr <- paste("x",variables[j],"y",variables[i], sep = "")
+      temp[plotnr] <- list(p)
     }
-    data$scaffolds$phylum <- factor(data$scaffolds$phylum, levels=c(levels(data$scaffolds$phylum),"None"))
-    data$scaffolds$phylum[is.na(data$scaffolds$phylum)] <- "None"
-    pal <- c(gg_color_hue(length(levels(data$scaffolds$phylum))-1),"#0000000D")
-    palette(pal)
-    data$scaffolds <- data$scaffolds[with(data$scaffolds, order(rev(phylum))), ]
-    pairs(data$scaffolds[,variables], upper.panel=NULL, col = data$scaffolds$phylum, cex = sqrt(data$scaffolds$length)/75*nsize, pch=20)
   }
   
-  if(color != "gc" & color != "phylum"){
-    rgb.c <- colorRampPalette(c("red", "green", "blue"))
-    rgb.a <- adjustcolor(rgb.c(100), alpha.f = 0.5)
-    palette(rgb.a)
-    diff <- log10(max(data$scaffolds[,color])+1) - log10(min(data$scaffolds[,color])+1)
-    tcol <- (log10(data$scaffolds[,color]+1) -log10(min(data$scaffolds[,color])+1)) * (99 / diff) +1
-    pairs(data$scaffolds[,variables], upper.panel=NULL, col = tcol, cex = sqrt(data$scaffolds$length)/75*nsize, pch=20)
-  }  
+  do.call("grid.arrange", c(temp, ncol=floor(sqrt(length(temp)))))
 }

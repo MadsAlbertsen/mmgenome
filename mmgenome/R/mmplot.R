@@ -7,14 +7,16 @@
 #' @param data (required) A dataframe with scaffold information.
 #' @param x (required) x-axis variable.
 #' @param y (required) y-axis variable.
-#' @param logx log10 scale the x-axis (default True)
-#' @param logy log10 scale the y-axis (default True)
-#' @param color Color by "phylum", "gc" or a coverage dataset (default: phylum)
+#' @param color Color by a specific variable (default: phylum)
+#' @param log.x log10 scale the x-axis (default: T)
+#' @param log.y log10 scale the y-axis (default: T)
+#' @param log.color log10 scale the colors (default: F)
 #' @param minlength Minimum length of plotted scaffolds.
 #' @param network Network used to plot connections between scaffolds.
 #' @param nconnections Minimum number of connections to plot (default: 0).
 #' @param duplicates Mark scaffolds with duplicated essential genes (default: F)
 #' @param labels If scaffold names are to be plotted (default: F)
+#' @param resize Rescale the size of the scaffolds (default: 1)
 #' 
 #' @return a ggplot2 object
 #' 
@@ -23,7 +25,7 @@
 #' @author Soren M. Karst \email{smk@@bio.aau.dk}
 #' @author Mads Albertsen \email{MadsAlbertsen85@@gmail.com}
 
-mmplot <- function(data, x, y, logx=F, logy=F, color = "phylum", minlength = NULL, network = NULL, nconnections = 0, duplicates = F, labels = F){
+mmplot <- function(data, x, y, log.x=F, log.y=F, color = "phylum", minlength = NULL, network = NULL, nconnections = 0, duplicates = F, labels = F, log.color = F, resize = 1){
   
   ## Subset based on length constrain
   
@@ -33,6 +35,7 @@ mmplot <- function(data, x, y, logx=F, logy=F, color = "phylum", minlength = NUL
   }
   
   ## Extract connections between scaffolds
+  
   if (!is.null(network)) {
     snetwork <- subset(network, network$scaffold1 %in% data$scaffolds$scaffold & network$scaffold2 %in% data$scaffolds$scaffold & connections >= nconnections)
     
@@ -40,6 +43,8 @@ mmplot <- function(data, x, y, logx=F, logy=F, color = "phylum", minlength = NUL
     links <- merge(links, data$scaffolds[,c("scaffold",x,y)], by.x = "scaffold2", by.y = "scaffold") 
     colnames(links)[4:7] <- c("x","y","xend","yend") 
   }
+  
+  ## Extract duplicates
   
   if (duplicates == T){
     dup<-data$essential[which(duplicated(data$essential$hmm.id) | duplicated(data$essential$hmm.id, fromLast=TRUE)),] 
@@ -59,29 +64,27 @@ mmplot <- function(data, x, y, logx=F, logy=F, color = "phylum", minlength = NUL
     colnames(dlinks)[3:6] <- c("x","y","xend","yend") 
   }
   
-  if (color == "phylum"){
-    p <- ggplot(data=data$scaffolds, aes_string(x = x, y = y, size = "length", color = "phylum")) + 
+  ## Plot the data
+  
+  if (class(data$scaffolds[,color]) == "factor"){
+    p <- ggplot(data=data$scaffolds, aes_string(x = x, y = y, size = "length", color = color)) + 
       geom_point(alpha=0.1, color = 'black') +
-      geom_point(data=subset(data$scaffolds, phylum != "NA"), shape = 1, alpha = 0.7) +
-      scale_size_area(name= "Scaffold length", max_size=20) +
+      geom_point(data=subset(data$scaffolds, data$scaffolds[, color] != "NA"), shape = 1, alpha = 0.7) +
+      scale_size_area(name= "Scaffold length", max_size=20*resize) +
       guides(colour = guide_legend(override.aes = list(alpha = 1, size = 5, shape = 19)))
   }
-  if (color == "gc"){
-    p <- ggplot(data=data$scaffolds, aes_string(x = x, y = y, size = "length", color = "gc")) +       
-      geom_point(alpha = 0.3) +
-      scale_size_area(name = "Scaffold length", max_size = 20) +
-      scale_colour_gradientn(colours = c("red", "green", "blue"))
-  }
-  if(color != "gc" & color != "phylum"){
+  
+  if (class(data$scaffolds[,color]) != "factor"){
     options(digits=2)
     p <- ggplot(data=data$scaffolds, aes_string(x = x, y = y, size = "length", color = color)) +       
       geom_point(alpha = 0.3) +
-      scale_size_area(name = "Scaffold length", max_size = 20) +
-      scale_colour_gradientn(colours = c("red", "green", "blue"), trans = "log")
+      scale_size_area(name = "Scaffold length", max_size = 20*resize)
+    if (log.color == F){p <- p + scale_colour_gradientn(colours = c("red", "green", "blue"))}
+    if (log.color == T){p <- p + scale_colour_gradientn(colours = c("red", "green", "blue"), trans = "log10")} 
   }
   
-  if (logx == T){p <- p + scale_x_log10()}
-  if (logy == T){p <- p + scale_y_log10()}
+  if (log.x == T){p <- p + scale_x_log10()}
+  if (log.y == T){p <- p + scale_y_log10()}
   
   if (!is.null(network)){
     p <- p +  
@@ -100,7 +103,6 @@ mmplot <- function(data, x, y, logx=F, logy=F, color = "phylum", minlength = NUL
   if (labels == T){
     p <- p + geom_text(label = data$scaffolds$scaffold, size = 4, color = "black")
   }
-  
   
   return(p)
 }

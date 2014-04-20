@@ -8,6 +8,7 @@
 #' @param network (required) A network file with connections between scaffolds.
 #' @param nconnections The minimum number of connections (default: 2).
 #' @param color Color by gc, phylum or a specific coverage dataset (default: "gc").
+#' @param log.color log10 scale the colors (default: F)
 #' @param labels If scaffold names are to be plotted (default: F).
 #' 
 #' @return An igraph network plot.
@@ -16,7 +17,7 @@
 #' @author Soren M. Karst \email{smk@@bio.aau.dk}
 #' @author Mads Albertsen \email{MadsAlbertsen85@@gmail.com}
 
-mmplot_network <- function(data, network, nconnections = 2, labels = F, color = "gc"){
+mmplot_network <- function(data, network, nconnections = 2, labels = F, color = "gc", log.color = F){
 
   ## Subset the network
   
@@ -43,30 +44,23 @@ mmplot_network <- function(data, network, nconnections = 2, labels = F, color = 
   
   ## Plot the data
   
-  if (color == "phylum"){
-    p <- ggplot(data = gpoints1, aes(x = x, y = y, size = length, color = phylum)) +
+  if (class(data$scaffolds[,color]) == "factor"){
+    p <- ggplot(data = gpoints1, aes_string(x = "x", y = "y", size = "length", color = color)) +
       geom_segment(data=links1, aes(x=x, y=y, xend=xend, yend=yend), color = "darkgrey", size = log10(links1$connections)) +
       geom_point(alpha=0.1, color = 'black') +
-      geom_point(data=subset(gpoints1, phylum != "NA"), shape = 1) +
+      geom_point(data=subset(gpoints1, gpoints1[,color] != "NA"), shape = 1) +
       scale_size_area(name= "Scaffold length", max_size=20) +
       guides(colour = guide_legend(override.aes = list(alpha = 1, size = 5, shape = 19)))
   }
   
-  if (color == "gc"){
-    p <- ggplot(data = gpoints1, aes(x = x, y = y, size = length, color = gc)) +
+  
+  if (class(data$scaffolds[,color]) != "factor"){
+    p <- ggplot(data = gpoints1, aes_string(x = "x", y = "y", size = "length", color = color)) +
       geom_segment(data=links1, aes(x=x, y=y, xend=xend, yend=yend), color = "darkgrey", size = log10(links1$connections)) +
       geom_point(alpha=0.7) +
-      scale_size_area(name= "Scaffold length", max_size=20) +
-      scale_colour_gradientn(colours = c("red", "green", "blue"))
-  }
-  
-  if(color != "gc" & color != "phylum"){
-    options(digits=2)
-    p <- ggplot(data=gpoints1, aes_string(x = "x", y = "y", size = "length", color = color)) +       
-      geom_segment(data=links1, aes(x=x, y=y, xend=xend, yend=yend), color = "darkgrey", size = log10(links1$connections)) +
-      geom_point(alpha = 0.7) +
-      scale_size_area(name = "Scaffold length", max_size = 20) +
-      scale_colour_gradientn(name = paste("Coverage ", color, sep=""), colours = c("red", "green", "blue"), trans = "log")
+      scale_size_area(name= "Scaffold length", max_size=20)
+      if (log.color == F){p <- p + scale_colour_gradientn(colours = c("red", "green", "blue"))}
+    if (log.color == T){p <- p + scale_colour_gradientn(colours = c("red", "green", "blue"), trans = "log10")}
   }
   
   if (labels == T){

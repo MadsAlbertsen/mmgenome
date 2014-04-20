@@ -12,12 +12,14 @@ mmplot(data, x, y)
 
   \item{y}{(required) y-axis variable.}
 
-  \item{logx}{log10 scale the x-axis (default True)}
+  \item{color}{Color by a specific variable (default:
+  phylum)}
 
-  \item{logy}{log10 scale the y-axis (default True)}
+  \item{log.x}{log10 scale the x-axis (default: T)}
 
-  \item{color}{Color by "phylum", "gc" or a coverage
-  dataset (default: phylum)}
+  \item{log.y}{log10 scale the y-axis (default: T)}
+
+  \item{log.color}{log10 scale the colors (default: F)}
 
   \item{minlength}{Minimum length of plotted scaffolds.}
 
@@ -32,6 +34,9 @@ mmplot(data, x, y)
 
   \item{labels}{If scaffold names are to be plotted
   (default: F)}
+
+  \item{resize}{Rescale the size of the scaffolds (default:
+  1)}
 }
 \value{
 a ggplot2 object
