@@ -2,7 +2,7 @@
 \alias{mmextract}
 \title{Extracts a subset of scaffolds}
 \usage{
-mmextract(data, seletion)
+mmextract(data, selection)
 }
 \arguments{
   \item{data}{The dataframe containing all data.}
