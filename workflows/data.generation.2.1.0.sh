@@ -5,6 +5,7 @@
 
 ### Needed input files
 # Fasta file with all assembled scaffolds (keep the naming as >1, >2 etc): assembly.fa
+# a mapping file "mapping.sam" (which has been modified from CLC	sed -i 's/SN:.*contig_/SN:/' mapping.sam)
 
 ### Needed software
 # Prodigal
