@@ -43,7 +43,23 @@ mmplot_pairs <- function(data, variables, color = "gc", log.color = F, log = NUL
   for (i in 1:length(variables)){
     for (j in 1:length(variables)){
       if (i < j){
-        p <- mmplot(data = data, x = variables[j], y = variables[i], color = color, log.color = log.color, minlength = minlength, resize = resize*0.5) + theme(legend.position = "none") + theme(plot.margin=unit(c(0.1,0.1,0,0),"cm"), panel.grid.minor=element_blank(), panel.grid.major=element_blank(), axis.title.x=element_blank(), axis.title.y=element_blank())
+        p <- mmplot(data = data, 
+                    x = variables[j], 
+                    y = variables[i], 
+                    color = color, 
+                    log.color = log.color, 
+                    minlength = minlength, 
+                    resize = resize*0.5) + 
+          theme(plot.margin=unit(c(0,0,0,0),"cm"), 
+                legend.position = "none",
+                panel.grid.minor=element_blank(), 
+                panel.grid.major=element_blank(), 
+                axis.title.x=element_blank(), 
+                axis.title.y=element_blank(),
+                axis.text.x=element_blank(),
+                axis.text.y=element_blank(),
+                axis.ticks=element_blank(),
+                panel.border=element_blank())
         if(!is.null(log)){
           if(variables[j] %in% log & !(variables[i] %in% log)){
             p <- p + scale_x_log10()
