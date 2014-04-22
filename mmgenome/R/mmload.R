@@ -102,8 +102,6 @@ mmload <- function(assembly, coverage, coverage.type = "simple", essential, pca 
     out <- Reduce(function(...) merge(..., all=T), l)
   } 
   
-  t <- merge(out, other$rRNA16S, all.x = T, by = "scaffold")
-  
   ##### Rename essential 
   
   outlist <- list(scaffolds = out, essential = ess)
