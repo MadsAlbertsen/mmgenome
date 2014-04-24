@@ -21,4 +21,5 @@ Depends:
     vegan,
     Biostrings,
     igraph,
-    reshape2
+    reshape2,
+    plyr

@@ -1,8 +1,8 @@
-#' Exports scaffolds in fasta format
+#' Compare essential genes in a bin to a group of references
 #'
 #' A nice long description
 #'
-#' @usage mmref_compare(data, compare, level, output, display.all)
+#' @usage mmref_compare(data, compare)
 #'
 #' @param data The dataframe containing all data.
 #' @param compare Which phyla to compare to.
@@ -25,7 +25,7 @@ mmref_compare <- function(data, compare, level="phylum", output = "plot", displa
     phylum.data <- mmref_phylum(eg)$data
     t <- subset(phylum.data, Phylum %in% compare)[,2:4]
     if(display.all == F){ t <- subset(t, Count != 0) }
-    t2 <- cast(t, HMM~Phylum, value = "Count")
+    t2 <- dcast(t, HMM~Phylum, value.var = "Count")
     ess <- cbind(data$essential[,c(1,3)],rep(1,nrow(data$essential)))
     colnames(ess) <- c("scaffold", "HMM", "mmbin")
     cHMM <- aggregate(mmbin ~ HMM, sum, data = ess)
@@ -44,6 +44,3 @@ mmref_compare <- function(data, compare, level="phylum", output = "plot", displa
   }  
   return(out)
 }
-
-
-
