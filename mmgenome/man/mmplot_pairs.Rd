@@ -7,8 +7,8 @@ mmplot_pairs(data, variables, color, nsize)
 \arguments{
   \item{data}{(required) The dataframe to plot.}
 
-  \item{variables}{(required) The vaiables to plot as a
-  list.}
+  \item{variables}{(required) The variables to plot as a
+  vector.}
 
   \item{color}{Coloring of the plot (default: gc)}
 
