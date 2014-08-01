@@ -1,11 +1,11 @@
 #' Interactively extract points from ggplot2 objects
 #'
-#' Adds "locator" functionallity to plots made with ggplot2
+#' Adds "locator" functionallity to plots made with mmplot (ggplot2). 
 #'
-#' @usage mmplot_locator(p, round)
+#' @usage mmplot_locator(p, sig)
 #'
 #' @param p (required) A ggplot2 object.
-#' @param nround number of digits
+#' @param sig The number of significant digits (default: 3).
 #' 
 #' @return X and Y coordinates marked in the plot.
 #' 
@@ -14,8 +14,21 @@
 #' @import ggplot2
 #' @author Soren M. Karst \email{smk@@bio.aau.dk}
 #' @author Mads Albertsen \email{MadsAlbertsen85@@gmail.com}
+#' 
+#' @examples
+#' 
+#' \dontrun{
+#' data(rocco)
+#' 
+#' p <- mmplot(data = d, x = "C13.12.03", y = "C14.01.09", log.x = T, log.y = T, color = "phylum", minlength = 3000)
+#' p
+#' sel <- mmplot_locator(p)
+#' sel <- data.frame(C13.12.03  =  c(1.39, 2.07, 16.8, 19.4, 7.72, 1.76),
+#'                   C14.01.09  =  c(29.4, 67.6, 85.9, 43.6, 16.7, 14.9))
+#' mmplot_selection(p, sel)
+#' }
 
-mmplot_locator <- function(p, nround=1){
+mmplot_locator <- function(p, sig=3){
   pi <- ggplot_build(p)
   x <- unlist(lapply(pi$data, function(l){l$x}))
   y <- unlist(lapply(pi$data, function(l){l$y})) 
@@ -37,7 +50,7 @@ mmplot_locator <- function(p, nround=1){
   
   if (pi$panel$x_scales[[1]]$trans$name == "log-10") d[,1] <- 10^(d[,1])
   if (pi$panel$y_scales[[1]]$trans$name == "log-10") d[,2] <- 10^(d[,2])
-  show(paste(colnames(d)[1]," = ",list(round(d[,1],nround))))
-  show(paste(colnames(d)[2]," = ",list(round(d[,2],nround))))
+  show(paste(colnames(d)[1]," = ",list(signif(d[,1],sig))))
+  show(paste(colnames(d)[2]," = ",list(signif(d[,2],sig))))
   return(d)
 }

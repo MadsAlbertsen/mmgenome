@@ -1,6 +1,6 @@
 #' Extracts a subset of scaffolds
 #'
-#' A nice long description
+#' Extracts a subset of scaffolds defined on a \code{mmplot} and selected using \code{mmplotlocator}.
 #'
 #' @usage mmextract(data, selection)
 #'
@@ -14,6 +14,21 @@
 #' @import sp
 #' @author Soren M. Karst \email{smk@@bio.aau.dk}
 #' @author Mads Albertsen \email{MadsAlbertsen85@@gmail.com}
+#' 
+#' @examples
+#' 
+#' \dontrun{
+#' data(rocco)
+#' 
+#' p <- mmplot(data = d, x = "C13.12.03", y = "C14.01.09", log.x = T, log.y = T, color = "phylum", minlength = 3000)
+#' p
+#' sel <- mmplot_locator(p)
+#' sel <- data.frame(C13.12.03  =  c(1.39, 2.07, 16.8, 19.4, 7.72, 1.76),
+#'                   C14.01.09  =  c(29.4, 67.6, 85.9, 43.6, 16.7, 14.9))
+#' mmplot_selection(p, sel)
+#' 
+#' dA <- mmextract(d, sel)
+#' }
 
 mmextract <-  function(data, selection, minlength = NULL){
   if (!is.null(minlength)){

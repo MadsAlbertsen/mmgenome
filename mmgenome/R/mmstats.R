@@ -1,8 +1,8 @@
-#' Calculates statistics on a set of scaffolds
+#' Calculates summary statistics on a set of scaffolds
 #'
-#' A nice long description
+#' Calculates summary statistics on a set of scaffolds. Can be used on any object loaded using \code{mmload}.
 #'
-#' @usage mmstats(data,, ncov)
+#' @usage mmstats(data, ncov)
 #'
 #' @param data The dataframe containing all data.
 #' @param ncov The number of coverage datasets (default = 2).
@@ -12,6 +12,13 @@
 #' @export
 #' @author Soren M. Karst \email{smk@@bio.aau.dk}
 #' @author Mads Albertsen \email{MadsAlbertsen85@@gmail.com}
+#' 
+#' @examples
+#' 
+#' \dontrun{
+#' data(rocco)
+#' mmstats(data = d, ncov = 4)
+#' }
 
 mmstats <- function(data, ncov=2) {
   coverage <- list()

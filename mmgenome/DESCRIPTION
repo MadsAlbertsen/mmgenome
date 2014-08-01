@@ -1,10 +1,10 @@
 Package: mmgenome
 Type: Package
 Title: Tools for extracting individual genomes from metagenomes
-Description: mmeta is a set of tools for individual extracting genomes from
+Description: mmgenome: a toolbox for extracting individual genomes from
     metagenomes.
-Version: 0.2.1
-Date: 2014-01-20
+Version: 0.2.0
+Date: 2014-07-31
 Author: Mads Albertsen
 Maintainer: Mads Albertsen <MadsAlbertsen85@gmail.com>
 Reference: Albertsen, M., Hugenholtz, P., Skarshewski, A., Nielsen, K. L.,
@@ -13,13 +13,13 @@ Reference: Albertsen, M., Hugenholtz, P., Skarshewski, A., Nielsen, K. L.,
     Nature biotechnology, 31(6), 533-8. doi:10.1038/nbt.2579
 License: AGPL-3
 Depends:
-    sp,
-    grid,
-    gridExtra,
-    ggplot2,
-    knitr,
-    vegan,
-    Biostrings,
-    igraph,
-    reshape2,
-    plyr
+    R (>= 3.1.0),
+    sp (>= 1.0-15),
+    gridExtra (>= 0.9.1),
+    ggplot2 (>= 1.0.0),
+    knitr (>= 1.6),
+    vegan (>= 2.0-10),
+    Biostrings (>= 2.32.0),
+    igraph (>= 0.7.1),
+    reshape2 (>= 1.4),
+    plyr (>= 1.8.1)

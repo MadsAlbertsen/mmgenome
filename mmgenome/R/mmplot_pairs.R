@@ -1,27 +1,35 @@
 #' Generates a ggplot2 style pairs plot
 #'
-#' A nice long description
+#' Generates a ggplot2 style pairs plot.
 #'
-#' @usage mmplot_pairs(data, variables, color, nsize)
+#' @usage mmplot_pairs(data, variables)
 #'
 #' @param data (required) The dataframe to plot.
-#' @param variables (required) The vaiables to plot as a list.
-#' @param color Coloring of the plot (default: gc)
+#' @param variables (required) The vaiables to plot as a vector.
+#' @param color Coloring of the plot (default: gc).
 #' @param minlength Minimum length of the plotted scaffolds.
 #' @param log A vector of variables to log scale.
-#' @param log.color Log scale the color (default: F)
-#' @param resize Rescale the size of the scaffolds (default: 1)
+#' @param log.color Log scale the color (default: F).
+#' @param resize Rescale the size of the scaffolds (default: 1).
+#' @param textsize Size of the legend text (deafult = 8).
 #' 
 #' @return A pairs plot object.
 #' 
 #' @export
 #' @author Soren M. Karst \email{smk@@bio.aau.dk}
 #' @author Mads Albertsen \email{MadsAlbertsen85@@gmail.com}
+#' 
+#' @examples
+#' \dontrun{
+#' data(rocco)
+#' 
+#' mmplot_pairs(data = d, variables = c("C13.12.03", "C14.01.09", "C13.11.25", "gc", "PC2"), color = "phylum", log = c("C13.12.03", "C14.01.09", "C13.11.25"), minlength = 10000)
+#' 
+#' }
 
-mmplot_pairs <- function(data, variables, color = "gc", log.color = F, log = NULL, minlength = NULL, resize = 1){  
+mmplot_pairs <- function(data, variables, color = "gc", log.color = F, log = NULL, minlength = NULL, resize = 1, textsize = 8){  
   
   ## Make a blank plot
-  temp <- list()
   emp <- data.frame(x = 0, y = 0)
   
   pblank <-  ggplot(emp, aes(x,y)) + 
@@ -36,9 +44,9 @@ mmplot_pairs <- function(data, variables, color = "gc", log.color = F, log = NUL
           axis.ticks=element_blank(),
           panel.border=element_blank())
   
-  temp <- list()
-  
   ## Iterate through the different combinations of plots
+  
+  temp <- list()
   
   for (i in 1:length(variables)){
     for (j in 1:length(variables)){
@@ -73,7 +81,7 @@ mmplot_pairs <- function(data, variables, color = "gc", log.color = F, log = NUL
         }
       }    
       if (i == j){ 
-        p <- pblank + geom_text(label=variables[i], size = 10)
+        p <- pblank + geom_text(label=variables[i], size = textsize)
       }
       if(i > j){
         p <- pblank 

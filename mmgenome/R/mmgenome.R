@@ -14,9 +14,6 @@
 #'   \item \code{\link{mmextract}}: Extracts a subset of scaffolds based on input from \code{\link{mmplot_locator}}.
 #'   \item \code{\link{mmextract_network}}: Extracts PE/MP connected scaffolds.
 #'   \item \code{\link{mmstats}}: An overview of key statistics of the scaffolds.
-#'   \item \code{\link{mmstats_duplicates}}: Identifies duplicated essential single copy genes.
-#'   \item \code{\link{mmref_especies}}: Reference data on essential genes.
-#'   \item \code{\link{mmref_ephylum}}: Reference data on essential genes on phylum level.
 #'   \item \code{\link{mmref_compare}}: Compare essential gene content to selected references.
 #'   \item \code{\link{mmexport}}: Export selected scaffolds to fasta file.
 #' }

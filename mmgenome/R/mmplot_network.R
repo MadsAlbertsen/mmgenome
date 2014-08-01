@@ -1,6 +1,6 @@
-#' Plots connected scaffolds in a network graph
+#' Plots connected scaffolds in a network
 #'
-#' A nice long description
+#' Plots connected scaffolds in a network using igraph and ggplot2.
 #'
 #' @usage mmplot_network(data, network)
 #'
@@ -11,11 +11,34 @@
 #' @param log.color log10 scale the colors (default: F)
 #' @param labels If scaffold names are to be plotted (default: F).
 #' 
-#' @return An igraph network plot.
+#' @return A ggplot2 object.
 #' 
+#' @import ggplot2
+#' @import igraph
 #' @export
 #' @author Soren M. Karst \email{smk@@bio.aau.dk}
 #' @author Mads Albertsen \email{MadsAlbertsen85@@gmail.com}
+#' 
+#' @examples
+#' 
+#' \dontrun{
+#' data(rocco)
+#' 
+#' p <- mmplot(data = d, x = "C13.12.03", y = "C14.01.09", log.x = T, log.y = T, color = "phylum", minlength = 3000)
+#' sel <- data.frame(C13.12.03  =  c(4.94, 8.99, 10.8, 7.22, 5.79),
+#'                   C14.01.09  =  c(43.9, 57.4, 35.7, 25.7, 32.6))
+#' mmplot_selection(p, sel) 
+#' 
+#' dA <- mmextract(d, sel)
+#' mmplot(data = dA, x = "C13.12.03", y = "C14.01.09", log.x = T, log.y = T, color = "phylum", minlength = 3000)
+#' mmplot_network(data = dA, network = pe, color = "phylum", nconnections = 10)
+#' 
+#' dB <- mmextract_network(subset = dA, original = d, network = pe, nconnections = 10, type = "direct")
+#' mmplot(data = dB, x = "C13.12.03", y = "C14.01.09", log.x = T, log.y = T, color = "phylum", minlength = 3000)
+#' mmplot_network(data = dB, network = pe, color = "phylum", nconnections = 10) 
+#' 
+#' }
+
 
 mmplot_network <- function(data, network, nconnections = 2, labels = F, color = "gc", log.color = F){
 

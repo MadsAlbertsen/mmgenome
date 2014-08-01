@@ -1,6 +1,6 @@
-#' Wraps ggplot2 for pretty default plots
-#'
-#' A nice long description.
+#' Function to visualise metagenomes
+#' 
+#' Versitile plotting function to visualise metagnome assemblies loaded through \code{mmload}. Wraps ggplot2 for pretty default plots.
 #'
 #' @usage mmplot(data, x, y)
 #'
@@ -24,6 +24,13 @@
 #' @import ggplot2
 #' @author Soren M. Karst \email{smk@@bio.aau.dk}
 #' @author Mads Albertsen \email{MadsAlbertsen85@@gmail.com}
+#' 
+#' @examples
+#' 
+#' \dontrun{
+#' data(rocco)
+#' mmplot(data = d, x = "C13.12.03", y = "C14.01.09", log.x = T, log.y = T, color = "phylum", minlength = 10000)
+#' }
 
 mmplot <- function(data, x, y, log.x=F, log.y=F, color = "phylum", minlength = NULL, network = NULL, nconnections = 0, duplicates = F, labels = F, log.color = F, resize = 1){
   
@@ -88,7 +95,7 @@ mmplot <- function(data, x, y, log.x=F, log.y=F, color = "phylum", minlength = N
   
   if (!is.null(network)){
     p <- p +  
-      geom_segment(data = links, aes(x = x, y = y, xend = xend, yend = yend), color = "darkgrey", size = 1) +
+      geom_segment(data = links, aes(x = x, y = y, xend = xend, yend = yend), color = "darkgrey", size = 1, alpha = 0.7) +
       geom_point(data = links, aes(x = x, y = y), size = 2, color = "darkgrey") +
       geom_point(data = links, aes(x = xend, y = yend), size = 2, color = "darkgrey")
   }
