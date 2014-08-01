@@ -2,7 +2,7 @@
 #'
 #' Compare essential genes in an extracted genome bin to a group of references
 #'
-#' @usage mmref_compare(data, tax.level, tax.compare)
+#' @usage mmref(data, tax.level, tax.compare)
 #'
 #' @param data The dataframe containing the genome bin of interest (optional).
 #' @param tax.level What level to compare on. Supports Kingdom, Phylum, Class, Genus, Species (default: Phylum)
@@ -26,19 +26,19 @@
 #' @examples
 #' 
 #' \dontrun{
-#' mmref_compare(tax.level = "Phylum", tax.compare = c("Proteobacteria", "Actinobacteria")) 
+#' mmref(tax.level = "Phylum", tax.compare = c("Proteobacteria", "Actinobacteria")) 
 #' 
-#' res <- mmref_compare(tax.level = "Phylum", tax.compare = c("Proteobacteria", "Actinobacteria"), output = "complete") 
+#' res <- mmref(tax.level = "Phylum", tax.compare = c("Proteobacteria", "Actinobacteria"), output = "complete") 
 #' res$table
 #' 
-#' mmref_compare(tax.level = "Phylum", tax.compare = "all") 
-#' mmref_compare(tax.level = "Phylum", tax.compare = "Proteobacteria", tax.aggregate = "Class")
-#' mmref_compare(tax.level = "Phylum", tax.compare = "Proteobacteria", tax.aggregate = "Class", summarise = "median") 
-#' mmref_compare(tax.level = "Class", tax.compare = "Betaproteobacteria", tax.aggregate = "Strain", summarise = "median")
+#' mmref(tax.level = "Phylum", tax.compare = "all") 
+#' mmref(tax.level = "Phylum", tax.compare = "Proteobacteria", tax.aggregate = "Class")
+#' mmref(tax.level = "Phylum", tax.compare = "Proteobacteria", tax.aggregate = "Class", summarise = "median") 
+#' mmref(tax.level = "Class", tax.compare = "Betaproteobacteria", tax.aggregate = "Strain", summarise = "median")
 #' 
-#' mmref_compare(tax.level = "Phylum", tax.compare = "Proteobacteria", tax.aggregate = "Class", summarise = "median", data = dA)}
+#' mmref(tax.level = "Phylum", tax.compare = "Proteobacteria", tax.aggregate = "Class", summarise = "median", data = dA)}
 
-mmref_compare <- function(data = NULL, tax.level="phylum", tax.compare, tax.aggregate = tax.level, summarise = "mean", output = "plot", plot.display = T, plot.sort = T){
+mmref <- function(data = NULL, tax.level="phylum", tax.compare, tax.aggregate = tax.level, summarise = "mean", output = "plot", plot.display = T, plot.sort = T){
   
   ### Load the reference data
   data(eg)
