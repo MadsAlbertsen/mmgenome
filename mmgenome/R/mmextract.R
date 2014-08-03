@@ -1,12 +1,15 @@
 #' Extracts a subset of scaffolds
 #'
-#' Extracts a subset of scaffolds defined on a \code{mmplot} and selected using \code{mmplotlocator}.
+#' Extracts a subset of scaffolds defined on a \code{mmplot} and selected using \code{mmplot_locator}.
 #'
 #' @usage mmextract(data, selection)
 #'
-#' @param data The dataframe containing all data.
-#' @param selection The subspace to extract.
+#' @param data (required) The dataframe containing all data.
+#' @param selection (required) Extract the scaffolds within the subspace.
 #' @param minlength Minimum scaffold length.
+#' @param exclude Vector of scaffold names to exclude.
+#' @param include Vector of scaffold names to include.
+#' @param original The original dataset, required when using include.
 #' 
 #' @return The subset of scaffolds in the original dataframe within the defined selection.
 #' 
@@ -30,7 +33,7 @@
 #' dA <- mmextract(d, sel)
 #' }
 
-mmextract <-  function(data, selection, minlength = NULL){
+mmextract <-  function(data, selection, minlength = NULL, exclude = NULL, include = NULL, original = NULL){
   if (!is.null(minlength)){
     data$scaffolds <- subset(data$scaffolds, length >= minlength)
     data$essential <- subset(data$essential, data$essential$scaffold %in% data$scaffolds$scaffold)    
@@ -40,8 +43,19 @@ mmextract <-  function(data, selection, minlength = NULL){
   in.selection <- point.in.polygon(unlist(data$scaffolds[xname]), unlist(data$scaffolds[yname]), unlist(selection[1]), unlist(selection[2]), mode.checked=T)
   in.selection <- in.selection > 0
   
-  out <- data$scaffolds[in.selection, ]
+  out <- data$scaffolds[in.selection, ]  
+  
+  if (!is.null(exclude)){
+    out <- subset(out, !(scaffold %in% exclude))
+  }
   es <- subset(data$essential, data$essential$scaffold %in% out$scaffold)
+  
+  if (!is.null(include)){
+    include_unique <- include[!(include %in% out$scaffold)]
+    out_in <- subset(original$scaffold, scaffold %in% include_unique)
+    out <- rbind.data.frame(out, out_in)
+    es <- subset(original$essential, original$essential$scaffold %in% out$scaffold)
+  }
   
   outlist <- list(scaffolds = out, essential = es)  
   

@@ -6,17 +6,23 @@
 mmextract(data, selection)
 }
 \arguments{
-\item{data}{The dataframe containing all data.}
+\item{data}{(required) The dataframe containing all data.}
 
-\item{selection}{The subspace to extract.}
+\item{selection}{(required) Extract the scaffolds within the subspace.}
 
 \item{minlength}{Minimum scaffold length.}
+
+\item{exclude}{Vector of scaffold names to exclude.}
+
+\item{include}{Vector of scaffold names to include.}
+
+\item{original}{The original dataset, required when using include.}
 }
 \value{
 The subset of scaffolds in the original dataframe within the defined selection.
 }
 \description{
-Extracts a subset of scaffolds defined on a \code{mmplot} and selected using \code{mmplotlocator}.
+Extracts a subset of scaffolds defined on a \code{mmplot} and selected using \code{mmplot_locator}.
 }
 \examples{
 \dontrun{

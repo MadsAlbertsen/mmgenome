@@ -12,13 +12,13 @@ mmplot(data, x, y)
 
 \item{y}{(required) y-axis variable.}
 
-\item{color}{Color by a specific variable (default: phylum)}
+\item{color}{Color by a specific variable or "none" (default: "phylum").}
 
-\item{log.x}{log10 scale the x-axis (default: T)}
+\item{log.x}{log10 scale the x-axis (default: T).}
 
-\item{log.y}{log10 scale the y-axis (default: T)}
+\item{log.y}{log10 scale the y-axis (default: T).}
 
-\item{log.color}{log10 scale the colors (default: F)}
+\item{log.color}{log10 scale the colors (default: F).}
 
 \item{minlength}{Minimum length of plotted scaffolds.}
 
@@ -26,11 +26,15 @@ mmplot(data, x, y)
 
 \item{nconnections}{Minimum number of connections to plot (default: 0).}
 
-\item{duplicates}{Mark scaffolds with duplicated essential genes (default: F)}
+\item{duplicates}{Mark scaffolds with duplicated essential genes (default: F).}
 
-\item{labels}{If scaffold names are to be plotted (default: F)}
+\item{labels}{If scaffold names are to be plotted (default: F).}
 
-\item{resize}{Rescale the size of the scaffolds (default: 1)}
+\item{resize}{Constant to rescale the size of the scaffolds (default: 1).}
+
+\item{highlight}{Mark selected scaffolds on the plot. Either as a vector of scaffold names or as a full subset of data.}
+
+\item{hightlight.color}{Color of the highlighted scaffolds (default: "darkred").}
 }
 \value{
 a ggplot2 object

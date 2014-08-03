@@ -7,16 +7,18 @@
 #' @param data (required) A dataframe with scaffold information.
 #' @param x (required) x-axis variable.
 #' @param y (required) y-axis variable.
-#' @param color Color by a specific variable (default: phylum)
-#' @param log.x log10 scale the x-axis (default: T)
-#' @param log.y log10 scale the y-axis (default: T)
-#' @param log.color log10 scale the colors (default: F)
+#' @param color Color by a specific variable or "none" (default: "phylum").
+#' @param log.x log10 scale the x-axis (default: T).
+#' @param log.y log10 scale the y-axis (default: T).
+#' @param log.color log10 scale the colors (default: F).
 #' @param minlength Minimum length of plotted scaffolds.
 #' @param network Network used to plot connections between scaffolds.
 #' @param nconnections Minimum number of connections to plot (default: 0).
-#' @param duplicates Mark scaffolds with duplicated essential genes (default: F)
-#' @param labels If scaffold names are to be plotted (default: F)
-#' @param resize Rescale the size of the scaffolds (default: 1)
+#' @param duplicates Mark scaffolds with duplicated essential genes (default: F).
+#' @param labels If scaffold names are to be plotted (default: F).
+#' @param resize Constant to rescale the size of the scaffolds (default: 1).
+#' @param highlight Mark selected scaffolds on the plot. Either as a vector of scaffold names or as a full subset of data.
+#' @param hightlight.color Color of the highlighted scaffolds (default: "darkred").
 #' 
 #' @return a ggplot2 object
 #' 
@@ -32,7 +34,7 @@
 #' mmplot(data = d, x = "C13.12.03", y = "C14.01.09", log.x = T, log.y = T, color = "phylum", minlength = 10000)
 #' }
 
-mmplot <- function(data, x, y, log.x=F, log.y=F, color = "phylum", minlength = NULL, network = NULL, nconnections = 0, duplicates = F, labels = F, log.color = F, resize = 1){
+mmplot <- function(data, x, y, log.x=F, log.y=F, color = "phylum", minlength = NULL, network = NULL, nconnections = 0, duplicates = F, labels = F, log.color = F,  resize = 1, highlight = NULL, highlight.color = "darkred"){
   
   ## Subset based on length constrain
   
@@ -73,33 +75,46 @@ mmplot <- function(data, x, y, log.x=F, log.y=F, color = "phylum", minlength = N
   
   ## Plot the data
   
-  if (class(data$scaffolds[,color]) == "factor"){
-    p <- ggplot(data=data$scaffolds, aes_string(x = x, y = y, size = "length", color = color)) + 
-      geom_point(alpha=0.1, color = 'black') +
-      geom_point(data=subset(data$scaffolds, data$scaffolds[, color] != "NA"), shape = 1, alpha = 0.7) +
-      scale_size_area(name= "Scaffold length", max_size=20*resize) +
-      guides(colour = guide_legend(override.aes = list(alpha = 1, size = 5, shape = 19)))
-  }
-  
-  if (class(data$scaffolds[,color]) != "factor"){
-    options(digits=2)
-    p <- ggplot(data=data$scaffolds, aes_string(x = x, y = y, size = "length", color = color)) +       
-      geom_point(alpha = 0.3) +
+  ### Colors: none
+  if (color == "none"){
+    p <- ggplot(data=data$scaffolds, aes_string(x = x, y = y, size = "length")) +       
+      geom_point(alpha = 0.1, color = "black") +
       scale_size_area(name = "Scaffold length", max_size = 20*resize)
-    if (log.color == F){p <- p + scale_colour_gradientn(colours = c("red", "green", "blue"))}
-    if (log.color == T){p <- p + scale_colour_gradientn(colours = c("red", "green", "blue"), trans = "log10")} 
-  }
+  } else {
   
+  ### Colors: factors  
+    if (class(data$scaffolds[,color]) == "factor"){
+      p <- ggplot(data=data$scaffolds, aes_string(x = x, y = y, size = "length", color = color)) + 
+        geom_point(alpha=0.1, color = 'black') +
+        geom_point(data=subset(data$scaffolds, data$scaffolds[, color] != "NA"), shape = 1, alpha = 0.7) +
+        scale_size_area(name= "Scaffold length", max_size=20*resize) +
+        guides(colour = guide_legend(override.aes = list(alpha = 1, size = 5, shape = 19)))
+    }
+  
+  ### Colors: numeric
+    if (class(data$scaffolds[,color]) != "factor"){
+      options(digits=2)
+      p <- ggplot(data=data$scaffolds, aes_string(x = x, y = y, size = "length", color = color)) +       
+        geom_point(alpha = 0.3) +
+        scale_size_area(name = "Scaffold length", max_size = 20*resize)
+      if (log.color == F){p <- p + scale_colour_gradientn(colours = c("red", "green", "blue"))}
+      if (log.color == T){p <- p + scale_colour_gradientn(colours = c("red", "green", "blue"), trans = "log10")} 
+    }
+  }
+    
+  ### Scale axis
   if (log.x == T){p <- p + scale_x_log10()}
   if (log.y == T){p <- p + scale_y_log10()}
   
+  ### Plot connections between scaffolds
   if (!is.null(network)){
     p <- p +  
-      geom_segment(data = links, aes(x = x, y = y, xend = xend, yend = yend), color = "darkgrey", size = 1, alpha = 0.7) +
+      geom_segment(data = links, aes(x = x, y = y, xend = xend, yend = yend), color = "darkgrey", size = 1, alpha = 0.5) +
       geom_point(data = links, aes(x = x, y = y), size = 2, color = "darkgrey") +
       geom_point(data = links, aes(x = xend, y = yend), size = 2, color = "darkgrey")
   }
   
+  ### Plot duplicates
   if (duplicates == T){
     p <- p +
       geom_segment(data = dlinks, aes(x = x, y = y, xend = xend, yend = yend), color = "darkred", size = 1) +
@@ -107,8 +122,21 @@ mmplot <- function(data, x, y, log.x=F, log.y=F, color = "phylum", minlength = N
       geom_point(data = dlinks, aes(x = xend, y = yend), size = 2, color = "darkred")
   }
   
+  ### Plot labels
   if (labels == T){
     p <- p + geom_text(label = data$scaffolds$scaffold, size = 4, color = "black")
+  }
+  
+  ### Highlight selected scaffolds
+  if (!is.null(highlight)){
+    if (class(highlight) != "list"){
+      highlight <- as.character(highlight)
+      sdata <- subset(data$scaffolds, scaffold %in% highlight)
+      p <- p + geom_point(data = sdata, color = highlight.color, shape = 1)  
+    } else{
+      p <- p + geom_point(data = highlight$scaffold, color = highlight.color, shape = 1)  
+    }
+    
   }
   
   return(p)
