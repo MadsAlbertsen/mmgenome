@@ -32,6 +32,8 @@ mmplot(data, x, y)
 
 \item{resize}{Constant to rescale the size of the scaffolds (default: 1).}
 
+\item{point.size}{Use a fixed size for points instead of scaffold length.}
+
 \item{highlight}{Mark selected scaffolds on the plot. Either as a vector of scaffold names or as a full subset of data.}
 
 \item{hightlight.color}{Color of the highlighted scaffolds (default: "darkred").}

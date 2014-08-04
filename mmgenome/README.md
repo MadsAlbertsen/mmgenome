@@ -5,6 +5,13 @@ mmgenome: Tools for extracting genomes from metagenomes
 
 ## Changelog
 
+### 0.3.1
+#### Bugfixes
+ - mmload: Column names of additional datasets did not load as intended.
+ 
+#### Enhancements 
+ - mmplot: The variable "point.size" can be used to scale the points by a constant instead of the scaffold length.
+
 ### 0.3.0
 #### Enhancements
  - mmplot: It's now possible to highlight subsets. Either by just suppling the subset dataset or using the names of the scaffolds.

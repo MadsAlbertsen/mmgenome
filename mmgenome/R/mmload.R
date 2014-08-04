@@ -141,7 +141,7 @@ mmload <- function(assembly, coverage, essential, pca = T, pca.ncomp = 3, tax = 
       }      
       data$scaffold <- as.character(data$scaffold)
       out <- merge(x = out, y = data, by = "scaffold", all.x = T)
-      colnames(out)[length(out)] <- other[i]
+      #colnames(out)[length(out)] <- other[i]
       if(nrow(out) > length_check){
         stop(paste("The file", other[i], "contains scaffolds with names not found in the assembly. Make sure that the names of the scaffolds in the assembly and other files are identical."))
       }
