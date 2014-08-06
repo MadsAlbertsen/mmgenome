@@ -11,6 +11,7 @@ mmgenome: Tools for extracting genomes from metagenomes
  
 #### Enhancements 
  - mmplot: The variable "point.size" can be used to scale the points by a constant instead of the scaffold length.
+ - mmimport: New simple function to handle import of the data through a Rmarkdown file.
 
 ### 0.3.0
 #### Enhancements

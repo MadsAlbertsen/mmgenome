@@ -21,6 +21,12 @@ mmplot_pairs(data, variables)
 \item{resize}{Rescale the size of the scaffolds (default: 1).}
 
 \item{textsize}{Size of the legend text (deafult = 8).}
+
+\item{point.size}{Use a fixed size for points instead of scaffold length.}
+
+\item{highlight}{Mark selected scaffolds on the plot. Either as a vector of scaffold names or as a full subset of data.}
+
+\item{hightlight.color}{Color of the highlighted scaffolds (default: "darkred").}
 }
 \value{
 A pairs plot object.

@@ -12,6 +12,9 @@
 #' @param log.color Log scale the color (default: F).
 #' @param resize Rescale the size of the scaffolds (default: 1).
 #' @param textsize Size of the legend text (deafult = 8).
+#' @param point.size Use a fixed size for points instead of scaffold length.
+#' @param highlight Mark selected scaffolds on the plot. Either as a vector of scaffold names or as a full subset of data.
+#' @param hightlight.color Color of the highlighted scaffolds (default: "darkred").
 #' 
 #' @return A pairs plot object.
 #' 
@@ -27,7 +30,7 @@
 #' 
 #' }
 
-mmplot_pairs <- function(data, variables, color = "gc", log.color = F, log = NULL, minlength = NULL, resize = 1, textsize = 8){  
+mmplot_pairs <- function(data, variables, color = "gc", log.color = F, log = NULL, minlength = NULL, resize = 1, textsize = 8 , point.size = NULL, highlight = NULL, highlight.color = "darkred"){  
   
   ## Make a blank plot
   emp <- data.frame(x = 0, y = 0)
@@ -57,7 +60,10 @@ mmplot_pairs <- function(data, variables, color = "gc", log.color = F, log = NUL
                     color = color, 
                     log.color = log.color, 
                     minlength = minlength, 
-                    resize = resize*0.5) + 
+                    resize = resize*0.5,
+                    point.size = point.size,
+                    highlight = highlight,
+                    highlight.color = highlight.color) + 
           theme(plot.margin=unit(c(0,0,0,0),"cm"), 
                 legend.position = "none",
                 panel.grid.minor=element_blank(), 

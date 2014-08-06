@@ -6,6 +6,7 @@
 #'
 #' \itemize{
 #'   \item \code{\link{mmload}}: Merge data function.
+#'   \item \code{\link{mmimport}}: Import data function.
 #'   \item \code{\link{mmplot}}: Default plot function.
 #'   \item \code{\link{mmplot_selction}}: Highlights a selection made with mmplot_locater on a mmplot.
 #'   \item \code{\link{mmplot_locator}}: Adds "locator" functionallity to ggplot2 objects.
