@@ -1,10 +1,10 @@
 #!/usr/bin/env perl
 ###############################################################################
 #
-#    extract.pe.reads.using.single.pl
+#    extract.subset.from.sam.using.list.pl
 #
-#	 Given a list of single reads it extracts the PE reads from 2 PE fastq files.   
-#
+#	 Extracts a subset of sequences from a SAM file using a list of references
+#    
 #    Copyright (C) 2012 Mads Albertsen
 #
 #    This program is free software: you can redistribute it and/or modify
@@ -40,70 +40,70 @@ BEGIN {
 # get input params
 my $global_options = checkParams();
 
+my $inref;
+my $insam;
+my $outputfile;
 
-my $insingle;
-my $inread;
-my $splitheader;
-my $splitfasta;
-my $print = 0;
-my $linecount = 0;
-my $printcount = 0;
-
-$inread = &overrideDefault("paired.fa",'inread');
-$insingle = &overrideDefault("single.fa",'insingle');
-$splitheader = &overrideDefault("_",'splitheader');
-$splitfasta = &overrideDefault("_",'splitfasta');
+$inref = &overrideDefault("inref.txt",'inref');
+$insam = &overrideDefault("insam.txt",'insam');
+$outputfile = &overrideDefault("outputfile.txt",'outputfile');
  
-my $seq = ""; 
-my $readfound = 0;
-my $toextract = 0;
-my $extracted = 0;
-my %reads;
+my %extract;
+my $ccount = 0;
 
 ######################################################################
 # CODE HERE
 ######################################################################
 
-open(INsingle, $insingle) or die("Cannot read file: $insingle\n");                                    #First read in all headers in the read 1 file that need to be matched in the read 2 file.
 
-while ( my $line = <INsingle> ) {
+## Extract the ID of each reference sequence
+
+open(inref_fh, $inref) or die("Cannot read file: $inref\n");
+
+while ( my $line = <inref_fh> ) {
 	chomp $line;   	
 	if ($line =~ m/>/) {
-		my @splitline = split(/$splitfasta/,$line);		
-		$reads{$splitline[0]} = 1;
-		$toextract++;
-	}
+		$line =~ s/>//g;
+		$extract{$line} = 1;
+		$ccount++;
+	}		
 }
-print "Found $toextract single reads.\n";
-close INsingle;
 
-open(OUT, ">paired.sub.fa") or die("Cannot create file: paired.sub.fa\n");
-open(INread, $inread) or die("Cannot read file: $inread\n");
+print "\nLoaded $ccount reference sequences from $inref\n\n";
 
-while (my $line = <INread>)  {	                                                                   #Look for matching read1 headers in the read2 file.
-	chomp $line;
-	if ($line =~ m/>/){
-		$linecount++;
-		$printcount++;
-		my @splitline = split(/$splitheader/,$line);
-		if (exists($reads{$splitline[0]})){
-			$print = 1;
-			$extracted++;
-		}
-		else{
-		$print = 0;
-		}
-	}			
-	if ($print == 1){
+
+close inref_fh;
+
+
+open(OUT, ">$outputfile") or die("Cannot create file: $outputfile\n");
+open(INsam, "$insam") or die("Cannot read file: $insam\n");
+
+my $count = 0;
+
+while ( my $line = <INsam> ) {
+	chomp $line;   	
+	$count++;
+	if ($count == 1){
 		print OUT "$line\n";
 	}
-	if ($printcount == 1000000){
-		print "$linecount reads scanned - $extracted extracted\n";
-		$printcount = 0;
+	else{
+		if ($line =~ m/\@SQ/) { 	
+			my @splitline = split("\t",$line);
+			my @splitline1 = split(":",$splitline[1]);
+			if (exists($extract{$splitline1[1]})){
+				print OUT "$line\n";
+			}
+		}
+		else{
+			my @splitline = split("\t",$line);
+			if (exists($extract{$splitline[2]})){
+				print OUT "$line\n";
+			}
+		}
 	}
 }
-print "Extracted $extracted of $linecount reads.\n";
-close INread;
+
+close INsam;
 close OUT;
 
 ######################################################################
@@ -113,7 +113,7 @@ sub checkParams {
     #-----
     # Do any and all options checking here...
     #
-    my @standard_options = ( "help|h+", "inread|p:s","splitheader|x:s","insingle|s:s","splitfasta|y:s");
+    my @standard_options = ( "help|h+", "insam|s:s", "inref|r:s", "outputfile|o:s");
     my %options;
 
     # Add any other command line options, and the code to handle them
@@ -151,7 +151,7 @@ __DATA__
 
 =head1 NAME
 
-    extract.read2.using.read1.pl
+    vprobes.generateprobes.pl
 
 =head1 COPYRIGHT
 
@@ -172,19 +172,15 @@ __DATA__
 
 =head1 DESCRIPTION
 
-Used in digital normalization. First read1 library is digital normalized
-by khmer scripts and then read2 is extracted using the remaining read1 reads
-using this scripts. This ensures proper use of PE reads. 
 
 
 =head1 SYNOPSIS
 
-extract.read2.using.read1.pl  -f -r -s [-h -x]
+script.pl  -i [-h]
 
  [-help -h]           Displays this basic usage information
- [-inread -p]        pairedreads.fa.
- [-insingle -s]       Singlereads.fa. 
- [-splitheader -x]    Code used to split the header of the fastq files (default: "_")
- [-splitfasta -y]     Code used to split the header of the fasta file (default: " ")
+ [-insam -s]          Input sam file.
+ [-inref -r]          Subset to be extracted in fasta format.
+ [-outputfile -o]     Outputfile.
  
 =cut
