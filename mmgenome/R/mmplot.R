@@ -7,7 +7,7 @@
 #' @param data (required) A dataframe with scaffold information.
 #' @param x (required) x-axis variable.
 #' @param y (required) y-axis variable.
-#' @param color Color by a specific variable or "none" (default: "phylum").
+#' @param color Color by a specific variable or "none" (default: "essential").
 #' @param log.x log10 scale the x-axis (default: T).
 #' @param log.y log10 scale the y-axis (default: T).
 #' @param log.color log10 scale the colors (default: F).
@@ -20,6 +20,7 @@
 #' @param point.size Use a fixed size for points instead of scaffold length.
 #' @param highlight Mark selected scaffolds on the plot. Either as a vector of scaffold names or as a full subset of data.
 #' @param hightlight.color Color of the highlighted scaffolds (default: "darkred").
+#' @param alpha Transparency of the plotted points.
 #' 
 #' @return a ggplot2 object
 #' 
@@ -32,10 +33,10 @@
 #' 
 #' \dontrun{
 #' data(rocco)
-#' mmplot(data = d, x = "C13.12.03", y = "C14.01.09", log.x = T, log.y = T, color = "phylum", minlength = 10000)
+#' mmplot(data = d, x = "C13.12.03", y = "C14.01.09", log.x = T, log.y = T, color = "essential", minlength = 10000)
 #' }
 
-mmplot <- function(data, x, y, log.x=F, log.y=F, color = "phylum", minlength = NULL, network = NULL, nconnections = 0, duplicates = F, labels = F, log.color = F,  resize = 1, point.size = NULL, highlight = NULL, highlight.color = "darkred"){
+mmplot <- function(data, x, y, log.x=F, log.y=F, color = "essential", minlength = NULL, network = NULL, nconnections = 0, duplicates = F, labels = F, log.color = F,  resize = 1, point.size = NULL, highlight = NULL, highlight.color = "darkred", alpha = NULL){
   
   ## Subset based on length constrain
   
@@ -78,24 +79,25 @@ mmplot <- function(data, x, y, log.x=F, log.y=F, color = "phylum", minlength = N
   
   ### Colors: none
   if (color == "none"){
+    if (is.null(alpha)){alpha <- 0.1}
     p <- ggplot(data=data$scaffolds, aes_string(x = x, y = y, size = "length"))              
     if (is.null(point.size)){
-      p <- p + geom_point(alpha = 0.1, color = "black") +
+      p <- p + geom_point(alpha = alpha, color = "black") +
               scale_size_area(name = "Scaffold length", max_size = 20*resize)
     } else {
-      p <- p + geom_point(alpha = 0.1, color = "black", size = point.size)
+      p <- p + geom_point(alpha = alpha, color = "black", size = point.size)
     }
   } else {
-  
   ### Colors: factors  
     if (class(data$scaffolds[,color]) == "factor"){
+      if (is.null(alpha)){alpha <- 0.1}
       p <- ggplot(data=data$scaffolds, aes_string(x = x, y = y, size = "length", color = color))
       if (is.null(point.size)){
-        p <- p + geom_point(alpha=0.1, color = 'black') +
+        p <- p + geom_point(alpha=alpha, color = 'black') +
                  geom_point(data=subset(data$scaffolds, data$scaffolds[, color] != "NA"), shape = 1, alpha = 0.7) +
                  scale_size_area(name = "Scaffold length", max_size = 20*resize)
       } else{
-        p <- p + geom_point(alpha=0.1, color = 'black', size = point.size) +
+        p <- p + geom_point(alpha=alpha, color = 'black', size = point.size) +
                  geom_point(data=subset(data$scaffolds, data$scaffolds[, color] != "NA"), shape = 1, alpha = 0.7, size = point.size)
       }
       p <- p + guides(colour = guide_legend(override.aes = list(alpha = 1, size = 5, shape = 19)))
@@ -103,13 +105,14 @@ mmplot <- function(data, x, y, log.x=F, log.y=F, color = "phylum", minlength = N
   
   ### Colors: numeric
     if (class(data$scaffolds[,color]) != "factor"){
+      if (is.null(alpha)){alpha <- 0.3}
       options(digits=2)
       p <- ggplot(data=data$scaffolds, aes_string(x = x, y = y, size = "length", color = color))
       if (is.null(point.size)){
-        p <- p + geom_point(alpha = 0.3) +
+        p <- p + geom_point(alpha = alpha) +
                  scale_size_area(name = "Scaffold length", max_size = 20*resize)
       } else{
-        p <- p + geom_point(alpha = 0.3, size = point.size)
+        p <- p + geom_point(alpha = alpha, size = point.size)
       }
       if (log.color == F){p <- p + scale_colour_gradientn(colours = c("red", "green", "blue"))}
       if (log.color == T){p <- p + scale_colour_gradientn(colours = c("red", "green", "blue"), trans = "log10")} 

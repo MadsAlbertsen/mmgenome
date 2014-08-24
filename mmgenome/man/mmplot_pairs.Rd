@@ -38,7 +38,7 @@ Generates a ggplot2 style pairs plot.
 \dontrun{
 data(rocco)
 
-mmplot_pairs(data = d, variables = c("C13.12.03", "C14.01.09", "C13.11.25", "gc", "PC2"), color = "phylum", log = c("C13.12.03", "C14.01.09", "C13.11.25"), minlength = 10000)
+mmplot_pairs(data = d, variables = c("C13.12.03", "C14.01.09", "C13.11.25", "gc", "PC2"), color = "essential", log = c("C13.12.03", "C14.01.09", "C13.11.25"), minlength = 10000)
 
 }
 }

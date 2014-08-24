@@ -32,8 +32,8 @@ mmstats <- function(data, ncov=2) {
   n.scaffolds <- nrow(data$scaffolds)
   Length.max <- max(data$scaffolds$length)
   GC.mean <- round(sum((data$scaffolds$gc*data$scaffolds$length))/sum(data$scaffolds$length),1)
-  Ess.total <- nrow(data$essential)
-  Ess.unique <- length(unique(data$essential$hmm.id))
+  if (length(data) == 2){Ess.total <- nrow(data$essential)}
+  if (length(data) == 2){Ess.unique <- length(unique(data$essential$hmm.id))}
   
   sorted_length <- sort(data$scaffolds$length)
   cum_sum <- 0
@@ -45,7 +45,11 @@ mmstats <- function(data, ncov=2) {
     }
   }
   
-  out<-rbind(n.scaffolds, GC.mean, N50, Length.total, Length.max, Length.mean, coverage, Ess.total, Ess.unique)
+  if (length(data) == 2){
+    out<-rbind(n.scaffolds, GC.mean, N50, Length.total, Length.max, Length.mean, coverage, Ess.total, Ess.unique)
+  } else{
+    out<-rbind(n.scaffolds, GC.mean, N50, Length.total, Length.max, Length.mean, coverage)
+  }
   colnames(out) <- "General Stats"
   return(out)
 }

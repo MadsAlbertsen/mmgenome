@@ -54,6 +54,9 @@ mmref <- function(data = NULL, tax.level="phylum", tax.compare, tax.aggregate = 
   
   ### Load essential gene informatio from the extracted genome bin
   if (!is.null(data)){
+    if (length(data) != 2){
+      stop(paste("There is no data on essential genes in the supplied data!"))
+    }
     data$essential$hmm.id <- as.factor(gsub("\\..*","", as.character(data$essential$hmm.id)))
     mmbin <- cbind.data.frame(HMM = data$essential$hmm.id, name = "mmgenomebin")
     colnames(mmbin)[ncol(mmbin)] <- tax.aggregate

@@ -17,6 +17,10 @@ mmplot_network(data, network)
 \item{log.color}{log10 scale the colors (default: F)}
 
 \item{labels}{If scaffold names are to be plotted (default: F).}
+
+\item{highlight}{Mark selected scaffolds on the plot. Either as a vector of scaffold names or as a full subset of data.}
+
+\item{hightlight.color}{Color of the highlighted scaffolds (default: "darkred").}
 }
 \value{
 A ggplot2 object.
@@ -28,18 +32,18 @@ Plots connected scaffolds in a network using igraph and ggplot2.
 \dontrun{
 data(rocco)
 
-p <- mmplot(data = d, x = "C13.12.03", y = "C14.01.09", log.x = T, log.y = T, color = "phylum", minlength = 3000)
+p <- mmplot(data = d, x = "C13.12.03", y = "C14.01.09", log.x = T, log.y = T, color = "essential", minlength = 3000)
 sel <- data.frame(C13.12.03  =  c(4.94, 8.99, 10.8, 7.22, 5.79),
                   C14.01.09  =  c(43.9, 57.4, 35.7, 25.7, 32.6))
 mmplot_selection(p, sel)
 
 dA <- mmextract(d, sel)
-mmplot(data = dA, x = "C13.12.03", y = "C14.01.09", log.x = T, log.y = T, color = "phylum", minlength = 3000)
-mmplot_network(data = dA, network = pe, color = "phylum", nconnections = 10)
+mmplot(data = dA, x = "C13.12.03", y = "C14.01.09", log.x = T, log.y = T, color = "essential", minlength = 3000)
+mmplot_network(data = dA, network = pe, color = "essential", nconnections = 10)
 
 dB <- mmextract_network(subset = dA, original = d, network = pe, nconnections = 10, type = "direct")
-mmplot(data = dB, x = "C13.12.03", y = "C14.01.09", log.x = T, log.y = T, color = "phylum", minlength = 3000)
-mmplot_network(data = dB, network = pe, color = "phylum", nconnections = 10)
+mmplot(data = dB, x = "C13.12.03", y = "C14.01.09", log.x = T, log.y = T, color = "essential", minlength = 3000)
+mmplot_network(data = dB, network = pe, color = "essential", nconnections = 10)
 
 }
 }

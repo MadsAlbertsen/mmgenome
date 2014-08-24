@@ -10,6 +10,8 @@
 #' @param color Color by gc, phylum or a specific coverage dataset (default: "gc").
 #' @param log.color log10 scale the colors (default: F)
 #' @param labels If scaffold names are to be plotted (default: F).
+#' @param highlight Mark selected scaffolds on the plot. Either as a vector of scaffold names or as a full subset of data.
+#' @param hightlight.color Color of the highlighted scaffolds (default: "darkred").
 #' 
 #' @return A ggplot2 object.
 #' 
@@ -24,23 +26,23 @@
 #' \dontrun{
 #' data(rocco)
 #' 
-#' p <- mmplot(data = d, x = "C13.12.03", y = "C14.01.09", log.x = T, log.y = T, color = "phylum", minlength = 3000)
+#' p <- mmplot(data = d, x = "C13.12.03", y = "C14.01.09", log.x = T, log.y = T, color = "essential", minlength = 3000)
 #' sel <- data.frame(C13.12.03  =  c(4.94, 8.99, 10.8, 7.22, 5.79),
 #'                   C14.01.09  =  c(43.9, 57.4, 35.7, 25.7, 32.6))
 #' mmplot_selection(p, sel) 
 #' 
 #' dA <- mmextract(d, sel)
-#' mmplot(data = dA, x = "C13.12.03", y = "C14.01.09", log.x = T, log.y = T, color = "phylum", minlength = 3000)
-#' mmplot_network(data = dA, network = pe, color = "phylum", nconnections = 10)
+#' mmplot(data = dA, x = "C13.12.03", y = "C14.01.09", log.x = T, log.y = T, color = "essential", minlength = 3000)
+#' mmplot_network(data = dA, network = pe, color = "essential", nconnections = 10)
 #' 
 #' dB <- mmextract_network(subset = dA, original = d, network = pe, nconnections = 10, type = "direct")
-#' mmplot(data = dB, x = "C13.12.03", y = "C14.01.09", log.x = T, log.y = T, color = "phylum", minlength = 3000)
-#' mmplot_network(data = dB, network = pe, color = "phylum", nconnections = 10) 
+#' mmplot(data = dB, x = "C13.12.03", y = "C14.01.09", log.x = T, log.y = T, color = "essential", minlength = 3000)
+#' mmplot_network(data = dB, network = pe, color = "essential", nconnections = 10) 
 #' 
 #' }
 
 
-mmplot_network <- function(data, network, nconnections = 2, labels = F, color = "gc", log.color = F){
+mmplot_network <- function(data, network, nconnections = 2, labels = F, color = "gc", log.color = F, highlight = NULL, highlight.color = "darkred"){
 
   ## Subset the network
   
@@ -100,6 +102,21 @@ mmplot_network <- function(data, network, nconnections = 2, labels = F, color = 
           axis.title.y=element_blank(),
           axis.ticks=element_blank(),
           panel.border=element_blank())
+  
+  ### Highlight selected scaffolds
+  if (!is.null(highlight)){
+    if (class(highlight) != "list"){
+      highlight <- as.character(highlight)
+      sdata <- subset(gpoints1, scaffold %in% highlight)
+      p <- p + geom_text(data = sdata, color = highlight.color, size = 4, label = sdata$scaffold)  
+    } else{
+      sdata <- subset(gpoints1, scaffold %in% highlight$scaffolds$scaffold)
+      p <- p + geom_text(data = sdata, color = highlight.color, size = 4, label = sdata$scaffold)  
+    }
+    
+  }
+  
+  
   
   return(p)
 }

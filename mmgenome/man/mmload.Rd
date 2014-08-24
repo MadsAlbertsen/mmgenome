@@ -10,7 +10,7 @@ mmload(assembly, coverage, essential)
 
 \item{coverage}{(required) A vector with the names of the coverage datasets.}
 
-\item{essential}{(required) A dataframe with information on essential genes.}
+\item{essential}{A dataframe with information on essential genes.}
 
 \item{tax}{A dataframe with taxonomic classification.}
 
@@ -27,7 +27,7 @@ mmload(assembly, coverage, essential)
 \item{other}{A vector with the names of additional datasets.}
 }
 \value{
-A list with 2 dataframes: scaffolds and essential
+A list with 2 dataframes: scaffolds and essential (if provided).
 }
 \description{
 This function is used to load information on scaffolds into a single object that is used by all subsequent mmgenome functions.

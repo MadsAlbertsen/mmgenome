@@ -36,7 +36,7 @@
 mmextract <-  function(data, selection, minlength = NULL, exclude = NULL, include = NULL, original = NULL){
   if (!is.null(minlength)){
     data$scaffolds <- subset(data$scaffolds, length >= minlength)
-    data$essential <- subset(data$essential, data$essential$scaffold %in% data$scaffolds$scaffold)    
+    if (length(data) == 2){data$essential <- subset(data$essential, data$essential$scaffold %in% data$scaffolds$scaffold)}
   } 
   xname <- names(selection[1])
   yname <- names(selection[2])
@@ -48,16 +48,19 @@ mmextract <-  function(data, selection, minlength = NULL, exclude = NULL, includ
   if (!is.null(exclude)){
     out <- subset(out, !(scaffold %in% exclude))
   }
-  es <- subset(data$essential, data$essential$scaffold %in% out$scaffold)
+  if (length(data) == 2){es <- subset(data$essential, data$essential$scaffold %in% out$scaffold)}
   
   if (!is.null(include)){
     include_unique <- include[!(include %in% out$scaffold)]
     out_in <- subset(original$scaffold, scaffold %in% include_unique)
     out <- rbind.data.frame(out, out_in)
-    es <- subset(original$essential, original$essential$scaffold %in% out$scaffold)
+    if (length(data) == 2){es <- subset(original$essential, original$essential$scaffold %in% out$scaffold)}
   }
   
-  outlist <- list(scaffolds = out, essential = es)  
-  
+  if (length(data) == 2){
+    outlist <- list(scaffolds = out, essential = es)
+  } else {
+    outlist <- list(scaffolds = out)
+  }  
   return(outlist)
 }

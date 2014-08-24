@@ -12,7 +12,7 @@ mmplot(data, x, y)
 
 \item{y}{(required) y-axis variable.}
 
-\item{color}{Color by a specific variable or "none" (default: "phylum").}
+\item{color}{Color by a specific variable or "none" (default: "essential").}
 
 \item{log.x}{log10 scale the x-axis (default: T).}
 
@@ -37,6 +37,8 @@ mmplot(data, x, y)
 \item{highlight}{Mark selected scaffolds on the plot. Either as a vector of scaffold names or as a full subset of data.}
 
 \item{hightlight.color}{Color of the highlighted scaffolds (default: "darkred").}
+
+\item{alpha}{Transparency of the plotted points.}
 }
 \value{
 a ggplot2 object
@@ -47,7 +49,7 @@ Versitile plotting function to visualise metagnome assemblies loaded through \co
 \examples{
 \dontrun{
 data(rocco)
-mmplot(data = d, x = "C13.12.03", y = "C14.01.09", log.x = T, log.y = T, color = "phylum", minlength = 10000)
+mmplot(data = d, x = "C13.12.03", y = "C14.01.09", log.x = T, log.y = T, color = "essential", minlength = 10000)
 }
 }
 \author{

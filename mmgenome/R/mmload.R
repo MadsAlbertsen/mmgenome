@@ -6,7 +6,7 @@
 #'
 #' @param assembly (required) The assembly.
 #' @param coverage (required) A vector with the names of the coverage datasets.
-#' @param essential (required) A dataframe with information on essential genes. 
+#' @param essential A dataframe with information on essential genes. 
 #' @param tax A dataframe with taxonomic classification.
 #' @param tax.freq Remove phyla seen less than X times (default: 20).
 #' @param tax.expand Use class level assignments for specific phyla.
@@ -15,7 +15,7 @@
 #' @param pca.ncomp Number of principal components to return (default: 3).
 #' @param other A vector with the names of additional datasets.
 #' 
-#' @return A list with 2 dataframes: scaffolds and essential
+#' @return A list with 2 dataframes: scaffolds and essential (if provided).
 #' 
 #' @export
 #' @import Biostrings
@@ -35,7 +35,7 @@
 #'             )
 #' }
 
-mmload <- function(assembly, coverage, essential, pca = T, pca.ncomp = 3, tax = NULL, tax.freq = 20, tax.clean = T, tax.expand = NULL, other = NULL){
+mmload <- function(assembly, coverage, essential = NULL, pca = T, pca.ncomp = 3, tax = NULL, tax.freq = 20, tax.clean = T, tax.expand = NULL, other = NULL){
   
   ##### Load coverage, gc and length #####
   
@@ -119,6 +119,7 @@ mmload <- function(assembly, coverage, essential, pca = T, pca.ncomp = 3, tax = 
     }  
     tax<-droplevels(tax)
     tax$scaffold <- as.character(tax$scaffold)
+    colnames(tax)[2] <- "essential"
     out <- merge(x = out, y = tax[,c(1,2)], by = "scaffold", all = T)
   }
   
@@ -149,7 +150,12 @@ mmload <- function(assembly, coverage, essential, pca = T, pca.ncomp = 3, tax = 
   } 
   
   ##### Output the data
+  if(!is.null(essential)){
+    outlist <- list(scaffolds = out, essential = ess)  
+  } else {
+    outlist <- list(scaffolds = out)  
+  }
   
-  outlist <- list(scaffolds = out, essential = ess)
+  
   return(outlist)
 }

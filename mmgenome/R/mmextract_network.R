@@ -59,9 +59,13 @@ mmextract_network <- function(subset, network, original = d, nconnections = 2, t
     out <- subset(original$scaffolds, original$scaffolds$scaffold %in% subset$scaffold | original$scaffolds$scaffold %in% ext.scaffolds$scaffold)
   }
 
-  es <- subset(original$essential, original$essential$scaffold %in% out$scaffold)
+  if (length(subset) == 2){es <- subset(original$essential, original$essential$scaffold %in% out$scaffold)}
   
-  outlist <- list(scaffolds = out, essential = es)
+  if (length(subset) == 2){
+    outlist <- list(scaffolds = out, essential = es)
+  } else {
+    outlist <- list(scaffolds = out)
+  }  
   
   return(outlist)  
 }
