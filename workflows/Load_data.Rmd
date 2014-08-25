@@ -5,25 +5,32 @@ date: "Sunday, August 24, 2014"
 output: html_document
 ---
 
-## Load packages
-In case you havn't installed the [mmgenome package](http://madsalbertsen.github.io/mmgenome/), it can be installed using the `devtools` package through github: `devtools::install_github("MadsAlbertsen/mmgenome/mmgenome")`.
+### Install mmgenome
+In case you havn't installed the [mmgenome package](http://madsalbertsen.github.io/mmgenome/), it can be installed using the `devtools` package through github. You might need enable administrative privileges to install some of the packages if you are using windows. At the time of compiling the `Biostrings` package wasn't available for `R 3.1.1`, hence it needs to be installed through bioconducter seperately.
+```{r Install_mmgenome, eval=FALSE}
+install.packages("devtools")
+source("http://bioconductor.org/biocLite.R")
+biocLite("Biostrings")
+devtools::install_github("MadsAlbertsen/mmgenome/mmgenome")
+```
+
+### Load mmgenome
 ```{r Load_packages, message=F,warning=FALSE}
 library("mmgenome")
-options(scipen = 8)
 ```
 
 ### Download example data
-The raw example dataset used in this tutorial can be [downloaded from figshare](http://goo.gl/CuWcQx).
+The raw example dataset used in this tutorial can be [downloaded from figshare](http://goo.gl/CuWcQx). For simplicity all raw data files are flat text files, hence take a look at them if you want to load your own custom data.
 
 ## Load data
 ### Metagenome assembly (required)
-The assembly in fasta format is loaded using the Biostrings package.
+The assembly in fasta format is loaded.
 ```{r Load_assembly}
 assembly <- readDNAStringSet("data/assembly.fa", format = "fasta")
 ```
 
 ### Coverage profiles (1 coverage profile is required)
-The coverage data is loaded. Note that each coverage dataset must have the scaffold name in the first column and the coverage in the second column. The name of each coverage dataset reflect when the data was sampled. The coverage data loaded in this example is exported directly from CLC genomics workbench and contains a number of columns that isn't needed. Hence, we only store the relevant columns (`Reference.sequence` and `Average.coverage`).
+The coverage data is loaded. Note that each coverage dataset must have the scaffold name in the first column and the coverage in the second column. The name of the example coverage datasets reflect when the data was sampled. The coverage data loaded in this example is exported directly from CLC genomics workbench and contains a number of columns that isn't needed. Hence, we only store the relevant columns (`Reference.sequence` and `Average.coverage`).
 ```{r Load_coverage}
 C13.11.14 <- read.table("data/C13.11.14.csv", header = T, sep = ",")[,c("Reference.sequence", "Average.coverage")]               
 C13.11.25 <- read.table("data/C13.11.25.csv", header = T, sep = ",")[,c("Reference.sequence", "Average.coverage")]               
@@ -52,7 +59,7 @@ mp <- read.table("data/network_mp.txt", header = T, sep = "\t")
 
 >Note: you can load any additional dataset and integrate it with the rest of the data as long as the first column contains the scaffold name.
 
-### Additional dataset: 16S rRNA infomration
+### Additional dataset: 16S rRNA information
 The 16S sequences were taxonomically classified using [SINA](http://www.arb-silva.de/aligner/).
 ```{r Load_Additional_16S}
 rRNA16S <- read.table("data/16S.txt", header = T, sep = "\t")
