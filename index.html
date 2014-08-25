@@ -54,6 +54,12 @@
 devtools::install_github("MadsAlbertsen/mmgenome/mmgenome")
 </code></pre>
 
+<p>You might need to install <code>Biostrings</code> through <code>bioconductor</code> depending on your version of R. However, it's quite easily done.</p>
+
+<pre><code>source("http://bioconductor.org/biocLite.R")
+biocLite("Biostrings")
+</code></pre>
+
 <p>To generate your own data simply clone repository and setup the shell script mmgenome/workflows/data.generation.2.1.0.sh.</p>
 
 <pre><code>git clone https://github.com/MadsAlbertsen/mmgenome.git
