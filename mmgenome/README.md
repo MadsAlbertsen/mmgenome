@@ -24,7 +24,7 @@ mmgenome: Tools for extracting genomes from metagenomes
  - mmextract: The function now supports to "include" or "exclude" scaffolds based on a list of scaffold names.
 
 ### 0.2.0
-Fist stable release of the mmgenome package
+First stable release of the mmgenome package
 
 ### 0.1.0
-Initial realease of the mmgenome package
+Initial release of the mmgenome package
