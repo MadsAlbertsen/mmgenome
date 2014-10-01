@@ -5,6 +5,9 @@ mmgenome: Tools for extracting genomes from metagenomes
 
 ## Changelog
 
+### 0.4.1
+ - mmload: Failed to load data if coverage was missing for some scaffolds. Fixed thanks to Matthew Neave (neavemj).
+
 ### 0.4.0
  - mmplot_network: It's now possible to to highlight scaffolds.
  - General: Information on essential genes is no longer required.
