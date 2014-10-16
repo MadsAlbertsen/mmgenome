@@ -4,6 +4,8 @@ mmgenome
 mmgenome: Tools for extracting genomes from metagenomes
 
 ## Changelog
+### 0.4.2
+ - mmplot: log.x and log.y is now false by default in order to function in mmplot_pairs (skarst).
 
 ### 0.4.1
  - mmload: Failed to load data if coverage was missing for some scaffolds. Fixed thanks to Matthew Neave (neavemj).

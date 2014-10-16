@@ -14,9 +14,9 @@ mmplot(data, x, y)
 
 \item{color}{Color by a specific variable or "none" (default: "essential").}
 
-\item{log.x}{log10 scale the x-axis (default: T).}
+\item{log.x}{log10 scale the x-axis (default: F).}
 
-\item{log.y}{log10 scale the y-axis (default: T).}
+\item{log.y}{log10 scale the y-axis (default: F).}
 
 \item{log.color}{log10 scale the colors (default: F).}
 

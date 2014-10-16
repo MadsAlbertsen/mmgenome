@@ -8,8 +8,8 @@
 #' @param x (required) x-axis variable.
 #' @param y (required) y-axis variable.
 #' @param color Color by a specific variable or "none" (default: "essential").
-#' @param log.x log10 scale the x-axis (default: T).
-#' @param log.y log10 scale the y-axis (default: T).
+#' @param log.x log10 scale the x-axis (default: F).
+#' @param log.y log10 scale the y-axis (default: F).
 #' @param log.color log10 scale the colors (default: F).
 #' @param minlength Minimum length of plotted scaffolds.
 #' @param network Network used to plot connections between scaffolds.
@@ -36,7 +36,7 @@
 #' mmplot(data = d, x = "C13.12.03", y = "C14.01.09", log.x = T, log.y = T, color = "essential", minlength = 10000)
 #' }
 
-mmplot <- function(data, x, y, log.x=T, log.y=T, color = "essential", minlength = NULL, network = NULL, nconnections = 0, duplicates = F, labels = F, log.color = F,  resize = 1, point.size = NULL, highlight = NULL, highlight.color = "darkred", alpha = NULL){
+mmplot <- function(data, x, y, log.x=F, log.y=F, color = "essential", minlength = NULL, network = NULL, nconnections = 0, duplicates = F, labels = F, log.color = F,  resize = 1, point.size = NULL, highlight = NULL, highlight.color = "darkred", alpha = NULL){
   
   ## Subset based on length constrain
   
