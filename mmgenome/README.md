@@ -4,6 +4,10 @@ mmgenome
 mmgenome: Tools for extracting genomes from metagenomes
 
 ## Changelog
+
+### 0.4.3
+ - mmstats: Error in summing scaffold lengths of large datasets due to integer overflow. Handled by converting integer to numeric (skarst).
+
 ### 0.4.2
  - mmplot: log.x and log.y is now false by default in order to function in mmplot_pairs (skarst).
 

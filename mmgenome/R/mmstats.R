@@ -22,6 +22,7 @@
 
 mmstats <- function(data, ncov=2) {
   options(scipen=8)
+  data$scaffolds$length <- as.numeric(data$scaffolds$length)
   coverage <- list()
   for (i in 1:ncov){
     coverage[i] <- round(sum((data$scaffolds[,i+3]*data$scaffolds$length))/sum(data$scaffolds$length),1)
