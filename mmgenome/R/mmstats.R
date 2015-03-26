@@ -25,7 +25,7 @@ mmstats <- function(data, ncov=2) {
   data$scaffolds$length <- as.numeric(data$scaffolds$length)
   coverage <- list()
   for (i in 1:ncov){
-    coverage[i] <- round(sum((data$scaffolds[,i+3]*data$scaffolds$length))/sum(data$scaffolds$length),1)
+    coverage[i] <- round(sum((data$scaffolds[,i+3]*data$scaffolds$length))/sum(data$scaffolds$length),2)
     names(coverage)[i] <- paste("Coverage",names(data$scaffolds)[i+3])
   }
   coverage<-t(data.frame(coverage))

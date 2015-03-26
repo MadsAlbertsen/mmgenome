@@ -33,34 +33,46 @@
 #' dA <- mmextract(d, sel)
 #' }
 
-mmextract <-  function(data, selection, minlength = NULL, exclude = NULL, include = NULL, original = NULL){
-  if (!is.null(minlength)){
-    data$scaffolds <- subset(data$scaffolds, length >= minlength)
-    if (length(data) == 2){data$essential <- subset(data$essential, data$essential$scaffold %in% data$scaffolds$scaffold)}
-  } 
-  xname <- names(selection[1])
-  yname <- names(selection[2])
-  in.selection <- point.in.polygon(unlist(data$scaffolds[xname]), unlist(data$scaffolds[yname]), unlist(selection[1]), unlist(selection[2]), mode.checked=T)
-  in.selection <- in.selection > 0
+mmextract <-  function(data, selection = NULL, minlength = NULL, exclude = NULL, include = NULL, original = NULL){
+### To extract only using scaffold names
+  if (is.null(selection) & !is.null(include)){
+    out <- subset(data$scaffold, scaffold %in% include)
+    if (length(data) == 2){es <- subset(data$essential, data$essential$scaffold %in% out$scaffold)}
+    if (length(data) == 2){
+      outlist <- list(scaffolds = out, essential = es)
+    } else {
+      outlist <- list(scaffolds = out)
+    }  
+### To extract using selection
+  } else{
+    if (!is.null(minlength)){
+      data$scaffolds <- subset(data$scaffolds, length >= minlength)
+      if (length(data) == 2){data$essential <- subset(data$essential, data$essential$scaffold %in% data$scaffolds$scaffold)}
+    } 
+    xname <- names(selection[1])
+    yname <- names(selection[2])
+    in.selection <- point.in.polygon(unlist(data$scaffolds[xname]), unlist(data$scaffolds[yname]), unlist(selection[1]), unlist(selection[2]), mode.checked=T)
+    in.selection <- in.selection > 0
   
-  out <- data$scaffolds[in.selection, ]  
+    out <- data$scaffolds[in.selection, ]  
   
-  if (!is.null(exclude)){
-    out <- subset(out, !(scaffold %in% exclude))
+    if (!is.null(exclude)){
+      out <- subset(out, !(scaffold %in% exclude))
+    }
+    if (length(data) == 2){es <- subset(data$essential, data$essential$scaffold %in% out$scaffold)}
+  
+    if (!is.null(include)){
+      include_unique <- include[!(include %in% out$scaffold)]
+      out_in <- subset(original$scaffold, scaffold %in% include_unique)
+      out <- rbind.data.frame(out, out_in)
+      if (length(data) == 2){es <- subset(original$essential, original$essential$scaffold %in% out$scaffold)}
+    }
+  
+    if (length(data) == 2){
+      outlist <- list(scaffolds = out, essential = es)
+    } else {
+      outlist <- list(scaffolds = out)
+    }  
   }
-  if (length(data) == 2){es <- subset(data$essential, data$essential$scaffold %in% out$scaffold)}
-  
-  if (!is.null(include)){
-    include_unique <- include[!(include %in% out$scaffold)]
-    out_in <- subset(original$scaffold, scaffold %in% include_unique)
-    out <- rbind.data.frame(out, out_in)
-    if (length(data) == 2){es <- subset(original$essential, original$essential$scaffold %in% out$scaffold)}
-  }
-  
-  if (length(data) == 2){
-    outlist <- list(scaffolds = out, essential = es)
-  } else {
-    outlist <- list(scaffolds = out)
-  }  
   return(outlist)
 }

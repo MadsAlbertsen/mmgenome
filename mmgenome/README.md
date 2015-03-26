@@ -5,6 +5,13 @@ mmgenome: Tools for extracting genomes from metagenomes
 
 ## Changelog
 
+### 0.5.0
+#### Enhancements
+ - mmsubset: new function to subset based on normal subset syntax. E.g. `gc > 50`.
+ 
+#### Bugfixes
+ - mmstats: Now rounding coverages to 2 decimals instead of one (Kirk3gaard).
+
 ### 0.4.3
  - mmstats: Error in summing scaffold lengths of large datasets due to integer overflow. Handled by converting integer to numeric (skarst).
 

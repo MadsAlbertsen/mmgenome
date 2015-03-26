@@ -86,7 +86,7 @@ mmload <- function(assembly, coverage, essential = NULL, pca = T, pca.ncomp = 3,
     tax$class <- as.character(tax$class)
     if (!is.null(tax.expand)){
       for (i in 1:nrow(tax)){
-        if(tax$phylum[i] == tax.expand){
+        if(tax$phylum[i] %in% tax.expand){
           tax$phylum[i] <- tax$class[i]   
         }
       }        
