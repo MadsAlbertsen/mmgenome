@@ -21,7 +21,13 @@ mmplot_network(data, network)
 
 \item{highlight}{Mark selected scaffolds on the plot. Either as a vector of scaffold names or as a full subset of data.}
 
+\item{constant.layout}{Use the same starting matrix for all plots, which results in the same sample layout on the same data (default: T).}
+
+\item{print.nolinks}{Print scaffolds with no links to the console (default: F).}
+
 \item{hightlight.color}{Color of the highlighted scaffolds (default: "darkred").}
+
+\item{links.scale}{Scale the width of the links between scaffolds by a constant (default: 1).}
 }
 \value{
 A ggplot2 object.

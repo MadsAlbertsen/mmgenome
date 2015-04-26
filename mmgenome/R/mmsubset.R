@@ -23,7 +23,7 @@
 
 mmsubset <- function(data, ...){
   d_new <- subset(data$scaffolds, ...)
-  e_new <- subset(data$essential, d_new$scaffold %in% data$essential$scaffold) 
+  e_new <- subset(data$essential, data$essential$scaffold %in% d_new$scaffold) 
   return(list(scaffolds = d_new, 
               essential = e_new))
 }

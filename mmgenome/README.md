@@ -5,6 +5,14 @@ mmgenome: Tools for extracting genomes from metagenomes
 
 ## Changelog
 
+### 0.6.0
+#### Bugfix
+ - mmsubset: The subsetting of essential genes was wrong, which affected the mmstats calculations. Fixed thanks to @russianconcussion.  
+
+### 0.6.0
+#### Enhancements
+ - mmplot_network: new option to scale line width of links between scaffolds by a constant (`scale.links`).
+
 ### 0.5.0
 #### Enhancements
  - mmsubset: new function to subset based on normal subset syntax. E.g. `gc > 50`.

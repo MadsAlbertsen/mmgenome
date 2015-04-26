@@ -12,6 +12,9 @@
 #' @param labels If scaffold names are to be plotted (default: F).
 #' @param highlight Mark selected scaffolds on the plot. Either as a vector of scaffold names or as a full subset of data.
 #' @param hightlight.color Color of the highlighted scaffolds (default: "darkred").
+#' @param constant.layout Use the same starting matrix for all plots, which results in the same sample layout on the same data (default: T).
+#' @param print.nolinks Print scaffolds with no links to the console (default: F).
+#' @param links.scale Scale the width of the links between scaffolds by a constant (default: 1).
 #' 
 #' @return A ggplot2 object.
 #' 
@@ -42,7 +45,7 @@
 #' }
 
 
-mmplot_network <- function(data, network, nconnections = 2, labels = F, color = "gc", log.color = F, highlight = NULL, highlight.color = "darkred"){
+mmplot_network <- function(data, network, nconnections = 2, labels = F, color = "gc", log.color = F, highlight = NULL, highlight.color = "darkred", constant.layout = T, print.nolinks = F, scale.links = 1){
 
   ## Subset the network
   
@@ -54,7 +57,12 @@ mmplot_network <- function(data, network, nconnections = 2, labels = F, color = 
   
   ## Calculate a layout   
   
-  t <- layout.fruchterman.reingold(g)
+  if (constant.layout == TRUE){
+    mat <- matrix(rep(0, length(V(g)$name)*2), ncol = 2)
+    t <- layout.fruchterman.reingold(g, start = mat)
+  } else{
+    t <- layout.fruchterman.reingold(g)  
+  }
   
   ## Extract layout coordinates
   
@@ -71,7 +79,7 @@ mmplot_network <- function(data, network, nconnections = 2, labels = F, color = 
   
   if (class(data$scaffolds[,color]) == "factor"){
     p <- ggplot(data = gpoints1, aes_string(x = "x", y = "y", size = "length", color = color)) +
-      geom_segment(data=links1, aes(x=x, y=y, xend=xend, yend=yend), color = "darkgrey", size = log10(links1$connections)) +
+      geom_segment(data=links1, aes(x=x, y=y, xend=xend, yend=yend), color = "darkgrey", size = log10(links1$connections)*scale.links) +
       geom_point(alpha=0.1, color = 'black') +
       geom_point(data=subset(gpoints1, gpoints1[,color] != "NA"), shape = 1) +
       scale_size_area(name= "Scaffold length", max_size=20) +
@@ -81,7 +89,7 @@ mmplot_network <- function(data, network, nconnections = 2, labels = F, color = 
   
   if (class(data$scaffolds[,color]) != "factor"){
     p <- ggplot(data = gpoints1, aes_string(x = "x", y = "y", size = "length", color = color)) +
-      geom_segment(data=links1, aes(x=x, y=y, xend=xend, yend=yend), color = "darkgrey", size = log10(links1$connections)) +
+      geom_segment(data=links1, aes(x=x, y=y, xend=xend, yend=yend), color = "darkgrey", size = log10(links1$connections)*scale.links) +
       geom_point(alpha=0.7) +
       scale_size_area(name= "Scaffold length", max_size=20)
       if (log.color == F){p <- p + scale_colour_gradientn(colours = c("red", "green", "blue"))}
@@ -116,7 +124,11 @@ mmplot_network <- function(data, network, nconnections = 2, labels = F, color = 
     
   }
   
-  
+  if(print.nolinks == T){
+    nolinks <- data$scaffolds$scaffold[!(data$scaffolds$scaffold %in% gpoints$scaffold)]
+    print("The following scaffolds have no links to other scaffolds:")
+    print(nolinks)
+  }
   
   return(p)
 }
