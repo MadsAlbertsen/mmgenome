@@ -50,7 +50,7 @@ mmplot_locator <- function(p, sig=3){
   
   if (pi$panel$x_scales[[1]]$trans$name == "log-10") d[,1] <- 10^(d[,1])
   if (pi$panel$y_scales[[1]]$trans$name == "log-10") d[,2] <- 10^(d[,2])
-  show(paste(colnames(d)[1]," = ",list(signif(d[,1],sig))))
-  show(paste(colnames(d)[2]," = ",list(signif(d[,2],sig))))
+  cat(paste0(colnames(d)[1]," = ",list(signif(d[,1],sig)),',\n'))
+  cat(paste0(colnames(d)[2]," = ",list(signif(d[,2],sig)),'\n\n'))
   return(d)
 }
