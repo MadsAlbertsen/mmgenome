@@ -38,7 +38,7 @@
 #' 
 #' mmref(tax.level = "Phylum", tax.compare = "Proteobacteria", tax.aggregate = "Class", summarise = "median", data = dA)}
 
-mmref <- function(data = NULL, tax.level="phylum", tax.compare, tax.aggregate = tax.level, summarise = "mean", output = "plot", plot.display = T, plot.sort = T){
+mmref <- function(data = NULL, tax.level="Phylum", tax.compare, tax.aggregate = tax.level, summarise = "mean", output = "plot", plot.display = T, plot.sort = T){
   
   ### Load the reference data
   data(eg)

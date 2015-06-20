@@ -36,7 +36,7 @@
 mmextract <-  function(data, selection = NULL, minlength = NULL, exclude = NULL, include = NULL, original = NULL){
 ### To extract only using scaffold names
   if (is.null(selection) & !is.null(include)){
-    out <- subset(data$scaffold, scaffold %in% include)
+    out <- subset(original$scaffold, scaffold %in% c(include, data$scaffolds$scaffold))
     if (length(data) == 2){es <- subset(data$essential, data$essential$scaffold %in% out$scaffold)}
     if (length(data) == 2){
       outlist <- list(scaffolds = out, essential = es)

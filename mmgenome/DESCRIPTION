@@ -3,8 +3,8 @@ Type: Package
 Title: Tools for extracting individual genomes from metagenomes
 Description: mmgenome: a toolbox for extracting individual genomes from
     metagenomes.
-Version: 0.6.1
-Date: 2015-04-22
+Version: 0.6.2
+Date: 2015-06-20
 Author: Mads Albertsen
 Maintainer: Mads Albertsen <MadsAlbertsen85@gmail.com>
 Reference: Albertsen, M., Hugenholtz, P., Skarshewski, A., Nielsen, K. L.,

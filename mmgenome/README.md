@@ -5,6 +5,17 @@ mmgenome: Tools for extracting genomes from metagenomes
 
 ## Changelog
 
+### 0.6.2
+#### Enhancements
+ - mmplot: Now includes an option, `factor.shape` to color factors with solid shapes instead.
+ - mmformat_esom: Formats ESOM data from databionics to a simple dataframe which can be loaded in mmgenome.
+ - mmformat_ppsp: Formats classification data from PhyloPythiaS+ to a simple dataframe which can be loaded in mmgenome.
+ - mmadd: Adds a dataframe to an existing mmgenome object.
+
+### 0.6.1
+#### Enhancements
+ - mmplot: Now includes an option to overlay a ESOM contour plot if ESOM data have been loaded.
+
 ### 0.6.0
 #### Bugfix
  - mmsubset: The subsetting of essential genes was wrong, which affected the mmstats calculations. Fixed thanks to @russianconcussion.  

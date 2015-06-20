@@ -72,8 +72,8 @@ mmplot_pairs <- function(data, variables, color = "gc", log.color = F, log = NUL
                 axis.title.y=element_blank(),
                 axis.text.x=element_blank(),
                 axis.text.y=element_blank(),
-                axis.ticks=element_blank(),
-                panel.border=element_blank())
+                axis.ticks=element_blank())#,
+                #panel.border=element_blank())
         if(!is.null(log)){
           if(variables[j] %in% log & !(variables[i] %in% log)){
             p <- p + scale_x_log10()

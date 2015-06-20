@@ -109,7 +109,9 @@ mmplot_network <- function(data, network, nconnections = 2, labels = F, color = 
           axis.title.x=element_blank(),
           axis.title.y=element_blank(),
           axis.ticks=element_blank(),
-          panel.border=element_blank())
+          panel.border=element_blank(),
+          panel.background = element_blank(),
+          legend.key = element_blank())
   
   ### Highlight selected scaffolds
   if (!is.null(highlight)){
