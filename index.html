@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html>
+
+  <head>
+    <meta charset='utf-8'>
+    <meta http-equiv="X-UA-Compatible" content="chrome=1">
+    <meta name="description" content="mmgenome : Tools for extracting individual genomes from metagneomes">
+
+    <link rel="stylesheet" type="text/css" media="screen" href="stylesheets/stylesheet.css">
+
+    <title>mmgenome</title>
+  </head>
+
+  <body>
+
+    <!-- HEADER -->
+    <div id="header_wrap" class="outer">
+        <header class="inner">
+          <a id="forkme_banner" href="https://github.com/MadsAlbertsen/mmgenome">View on GitHub</a>
+
+          <h1 id="project_title">mmgenome</h1>
+          <h2 id="project_tagline">Tools for extracting individual genomes from metagneomes</h2>
+
+            <section id="downloads">
+              <a class="zip_download_link" href="https://github.com/MadsAlbertsen/mmgenome/zipball/master">Download this project as a .zip file</a>
+              <a class="tar_download_link" href="https://github.com/MadsAlbertsen/mmgenome/tarball/master">Download this project as a tar.gz file</a>
+            </section>
+        </header>
+    </div>
+
+    <!-- MAIN CONTENT -->
+    <div id="main_content_wrap" class="outer">
+      <section id="main_content" class="inner">
+        <h3>
+<a name="what-is-mmgenome" class="anchor" href="#what-is-mmgenome"><span class="octicon octicon-link"></span></a>What is mmgenome?</h3>
+
+<p>The mmgenome toolbox enables reproducible extraction of individual genomes from metagenomes. It builds on the <a href="http://madsalbertsen.github.io/multi-metagenome/">multi-metagenome</a> concept, but wraps most of the process of extracting genomes in simple R functions. Thereby making the whole process of binning easy and at the same time reproducible through the Rmarkdown format. </p>
+
+<p>The mmgenome R package also facilitates effortless integration with additional data sources and hence should not be seen as "yet another binning method", but rather a package to integrate different binning strategies. </p>
+
+<p>The package is currently in beta stage and we'll be updating the documentation here shortly. All functions in the mmgenome R package has associated documentation, check it out in R by e.g. <code>?mmplot</code>.</p>
+
+<h3>
+<a name="how-does-it-work" class="anchor" href="#how-does-it-work"><span class="octicon octicon-link"></span></a>How does it work?</h3>
+
+<p>Check out our examples of <a href="http://madsalbertsen.github.io/mmgenome/Load_data.html">loading data</a> and <a href="http://madsalbertsen.github.io/mmgenome/Genome_extraction.html">extracting genomes</a> in the mmgenome R package. The associated Rmarkdown files can be found in the folder mmgenome/workflows.</p>
+
+<h3>
+<a name="getting-started" class="anchor" href="#getting-started"><span class="octicon octicon-link"></span></a>Getting started</h3>
+
+<p>Install the latest version of <a href="http://www.r-project.org/">R (&gt;3.1)</a>, <a href="http://www.r-project.org/">Rtools</a> and <a href="http://www.rstudio.com/">RStudio</a>. Then go ahead and install the mmgenome R package directly from github using the devtools package.</p>
+
+<pre><code>install.packages("devtools")
+devtools::install_github("MadsAlbertsen/mmgenome/mmgenome")
+</code></pre>
+
+<p>You might need to install <code>Biostrings</code> through <code>bioconductor</code> depending on your version of R. However, it's quite easily done.</p>
+
+<pre><code>source("http://bioconductor.org/biocLite.R")
+biocLite("Biostrings")
+</code></pre>
+
+<p>To generate your own data simply clone repository and setup the shell script mmgenome/workflows/data.generation.2.1.0.sh.</p>
+
+<pre><code>git clone https://github.com/MadsAlbertsen/mmgenome.git
+</code></pre>
+      </section>
+    </div>
+
+    <!-- FOOTER  -->
+    <div id="footer_wrap" class="outer">
+      <footer class="inner">
+        <p class="copyright">mmgenome maintained by <a href="https://github.com/MadsAlbertsen">MadsAlbertsen</a></p>
+        <p>Published with <a href="http://pages.github.com">GitHub Pages</a></p>
+      </footer>
+    </div>
+
+              <script type="text/javascript">
+            var gaJsHost = (("https:" == document.location.protocol) ? "https://ssl." : "http://www.");
+            document.write(unescape("%3Cscript src='" + gaJsHost + "google-analytics.com/ga.js' type='text/javascript'%3E%3C/script%3E"));
+          </script>
+          <script type="text/javascript">
+            try {
+              var pageTracker = _gat._getTracker("UA-53930589-1");
+            pageTracker._trackPageview();
+            } catch(err) {}
+          </script>
+
+
+  </body>
+</html>
