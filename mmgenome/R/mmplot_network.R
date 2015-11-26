@@ -12,7 +12,6 @@
 #' @param labels If scaffold names are to be plotted (default: F).
 #' @param highlight Mark selected scaffolds on the plot. Either as a vector of scaffold names or as a full subset of data.
 #' @param hightlight.color Color of the highlighted scaffolds (default: "darkred").
-#' @param constant.layout Use the same starting matrix for all plots, which results in the same sample layout on the same data (default: T).
 #' @param print.nolinks Print scaffolds with no links to the console (default: F).
 #' @param links.scale Scale the width of the links between scaffolds by a constant (default: 1).
 #' 
@@ -45,7 +44,7 @@
 #' }
 
 
-mmplot_network <- function(data, network, nconnections = 2, labels = F, color = "gc", log.color = F, highlight = NULL, highlight.color = "darkred", constant.layout = T, print.nolinks = F, scale.links = 1){
+mmplot_network <- function(data, network, nconnections = 2, labels = F, color = "gc", log.color = F, highlight = NULL, highlight.color = "darkred", print.nolinks = F, scale.links = 1){
 
   ## Subset the network
   
@@ -57,13 +56,8 @@ mmplot_network <- function(data, network, nconnections = 2, labels = F, color = 
   
   ## Calculate a layout   
   
-  if (constant.layout == TRUE){
-    mat <- matrix(rep(0, length(V(g)$name)*2), ncol = 2)
-    t <- layout.fruchterman.reingold(g, start = mat)
-  } else{
-    t <- layout.fruchterman.reingold(g)  
-  }
-  
+  t <- layout_with_fr(g)  
+
   ## Extract layout coordinates
   
   gpoints <- data.frame( "scaffold" = V(g)$name, "x" = t[,1], "y" = t[,2])
