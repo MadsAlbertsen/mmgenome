@@ -1,0 +1,25 @@
+Package: mmgenome
+Type: Package
+Title: Tools for extracting individual genomes from metagenomes
+Description: mmgenome: a toolbox for extracting individual genomes from
+    metagenomes.
+Version: 0.6.3
+Date: 2015-10-21
+Author: Mads Albertsen
+Maintainer: Mads Albertsen <MadsAlbertsen85@gmail.com>
+Reference: Albertsen, M., Hugenholtz, P., Skarshewski, A., Nielsen, K. L.,
+    Tyson, G. W., & Nielsen, P. H. (2013). Genome sequences of rare, uncultured
+    bacteria obtained by differential coverage binning of multiple metagenomes.
+    Nature biotechnology, 31(6), 533-8. doi:10.1038/nbt.2579
+License: AGPL-3
+Depends:
+    R (>= 3.1.0),
+    sp (>= 1.0-15),
+    gridExtra (>= 0.9.1),
+    ggplot2 (>= 1.0.0),
+    knitr (>= 1.6),
+    vegan (>= 2.0-10),
+    Biostrings (>= 2.32.0),
+    igraph (>= 1.0.0),
+    reshape2 (>= 1.4),
+    dplyr (>= 0.4.0)
