@@ -1,0 +1,179 @@
+---
+title: "Analysis - Daims Nitrospira 2 MBR assembly"
+author: "Mads Albertsen"
+date: "November 24, 2015"
+output: html_document
+---
+## Introduction
+This report documents the binning of a Nitrospira genome from a pilot-scale MBR reactor used for wastewater treatment (MBR). See [Daims et al., 2015: Complete Nitrification by Nitrospira Bacteria](https://doi.org/10.1038/nature16461) for further details.
+
+## Load the mmgenome package
+The metagenome data is analysed using the [mmgenome package](http://madsalbertsen.github.io/mmgenome/).
+```{r Load_package, message=FALSE, warning=FALSE, results='hide'}
+library("mmgenome")
+```
+
+## Import data
+The Rmarkdown file [Load_data.Rmd](http://madsalbertsen.github.io/mmgenome/Daims_MBR_Load_data.html) describes the loading of the data and can be imported using the `mmimport` function. However, the preprocessed data can also be downloaded directly from figshare: [Daims_MBR](http://dx.doi.org/10.6084/m9.figshare.1613285). Hence, here we import the prepocessed data from figshare instead.
+
+```{r Load_data, message=FALSE, warning=FALSE, results='hide'}
+load("Daims_MBR.RData")
+```
+
+## Extract Nitrospira 2
+The combination of the coverage of sample `Gel1` and `MBR1` are used to make an intial extraction that includes the Nitrospira genome.
+```{r zoomA, fig.width=12, fig.height=10, fig.align='center', warning=FALSE, message=FALSE}
+p <- mmplot(data = d, 
+            x = "Gel1", 
+            y = "MBR1", 
+            log.x = F, 
+            log.y = F, 
+            color = "essential", 
+            minlength = 5000,
+            factor.shape = "solid") +
+  xlim(1,15) +
+  ylim(1,15)
+
+#p
+#sel <- mmplot_locator(p)
+
+sel <- data.frame(Gel1  =  c(4.29, 6.05, 7.78, 8.41, 8.35, 6.17, 4.62, 4.02),
+                  MBR1 = c(6.28, 7.83, 8.65, 7.63, 6.77, 5.3, 4.33, 5.02))
+
+mmplot_selection(p, sel)
+```
+
+The scaffolds included in the defined subspace are extracted using the `mmextract` function. 
+```{r extractA}
+dA <- mmextract(d, sel)
+```
+
+The `mmstats` function applies to any extracted object. Hence, it can be used directly on the subset.
+```{r statsA}
+mmstats(dA, ncov = 7)
+```
+
+There is still a lot of contaminating scaffolds in the bin, hence we look if they can be seperated using another combination of datasets.
+```{r pairsA, fig.width=12, fig.height=10, fig.align='center'}
+mmplot_pairs(data = dA, 
+             variables = c("MBR1", "MBR", "Gel", "Gel1", "Gel7", "Foam", "Foam2", "gc"), 
+             log = c("MBR1", "MBR", "Gel", "Gel1", "Gel7", "Foam", "Foam2"), 
+             minlength = 5000, 
+             color = "essential")
+```
+
+## Subset B
+The `Gel7` sample vs. `gc` is chosen. We could also have used other combinations.
+```{r zoomB, fig.width=12, fig.height=10, fig.align='center'}
+p <- mmplot(data = dA, x = "gc", y = "Gel7", log.y = T, color = "essential")
+
+#p
+#sel <- mmplot_locator(p)
+
+sel <- data.frame(gc  =  c(48.1, 47, 57.6, 63.6, 64.8, 59.2),
+                  Gel7  =  c(5.25, 9.07, 11.1, 7.81, 5.38, 3.8))
+
+mmplot_selection(p, sel)
+```
+
+The scaffolds included in the defined subspace are extracted using the `mmextract` function. 
+```{r extractB}
+dB <- mmextract(dA, sel)
+```
+
+```{r statsB}
+mmstats(dB, ncov = 7)
+```
+
+It starts to look better. However, there is still a som contamination.
+```{r pairsB, fig.width=12, fig.height=10, fig.align='center'}
+mmplot_pairs(data = dB, 
+             variables = c("Gel7", "Foam", "Foam2", "PC1", "PC2"),
+             minlength = 5000, 
+             color = "essential")
+```
+
+## Subset C
+The `PC1` vs. `Foam2`  seem to remove most contamination. 
+```{r zoomC, fig.width=12, fig.height=10, fig.align='center'}
+p <- mmplot(data = dB, 
+            x = "PC1", 
+            y = "Foam2", 
+            log.x = F, 
+            log.y = F, 
+            color = "essential")
+
+#p
+#sel <- mmplot_locator(p)
+
+sel <- data.frame(PC1  =  c(-0.0743, 0.00365, 0.0324, 0.0594, 0.0642, 0.0132, -0.0613, -0.0709),
+                  Foam2  =  c(3.47, 6.38, 5.99, 4.32, 1.41, 0.703, 0.739, 2.16))
+
+mmplot_selection(p, sel)
+```
+
+The scaffolds included in the defined subspace are extracted using the `mmextract` function. Based on the subsequent network plot some scaffolds were found to be part of other genomes. Hence, they are excluded directly here.
+```{r extractC}
+dC <- mmextract(dB, sel, exclude = c("7732", "1244", "11244", "8210","22459","21777", "5331", "61245", "41747", "28230", "22976"))
+```
+
+```{r statsC}
+mmstats(dC, ncov = 7)
+```
+
+## Using paried-end connections (Subset D)
+Until now we have just used coverage profiles to extract scaffolds related to our genome of interest. However, some scaffolds might be present in many copies (repeats) and hence have a much higher coverage than the rest of the genome. In addition, some scaffolds will by chance have a slightly different coverage profile than the rest of the genome and thereby also be missed.
+
+The function `mmplot_network` can be used to generate a network plot of scaffolds connected by paired-end reads. We start by plotting the scaffolds we have in our current subset.
+```{r networkD, fig.width=10, fig.height=10, fig.align='center'}
+mmplot_network(data = dC, network = pe, nconnections = 1, color = "essential", scale.links = 0.5)
+```
+
+To include repeats and other missed scaffolds we simply extract all scaffolds that are directly connected by paired-end reads to our current subset `dC` using `mmextract_network`. Only scaffolds directly connected to the subset is extracted. 
+```{r network_extractD}
+dD <- mmextract_network(subset = dC, original = d, network = pe, nconnections = 1, type = "direct")
+```
+
+... and then plot the new subset. There was no additional repeats to be included.
+```{r networkD2, fig.width=10, fig.height=10, fig.align='center'}
+mmplot_network(data = dD, network = pe, nconnections = 1, color = "essential", scale.links = 0.5)
+```
+
+The `mmstats` function applies to any extracted object. Hence, it can be used directly on the subset.
+```{r statsD}
+mmstats(dD, ncov = 7)
+```
+
+## Subset E
+We do a final clean-up as we might have wrongly included some scaffolds. Some scaffolds from the other Nitrospira genome had been recruited to the bin using PE reads. Hence, these are excluded.
+```{r zoomE, fig.width=12, fig.height=10, fig.align='center'}
+p <- mmplot(data = dD, 
+            x = "Gel1", 
+            y = "MBR1", 
+            log.x = F, 
+            log.y = F,
+            color = "essential")
+
+#p
+#sel <- mmplot_locator(p)
+
+sel <- data.frame(Gel1  =  c(-0.972, 2.22, 12.3, 45.2, 47.5, 35.5, 13.1, 9.4, 9.31, 4.52, 0.00282),
+                  MBR1  =  c(0.427, 7.71, 16.4, 21.1, 20.2, 15, 10.7, 8.02, 5.95, 0.323, -0.229))
+
+mmplot_selection(p, sel)
+```
+
+The scaffolds included in the defined subspace are extracted using the `mmextract` function. 
+```{r extractE}
+dE <- mmextract(dD, sel)
+```
+
+```{r statsE}
+mmstats(dE, ncov = 7)
+```
+
+## Export the scaffolds
+Finally the binned scaffolds are exported.
+```{r export}
+mmexport(data = dE, assembly = assembly, file = "MBR_Nitrospira2_it1.fa")
+```

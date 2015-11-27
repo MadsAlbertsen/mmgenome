@@ -1,0 +1,91 @@
+---
+title: "Analysis - Daims Nitrospira 5 GWW assembly"
+author: "Mads Albertsen"
+date: "November 24, 2015"
+output: html_document
+---
+## Introduction
+This report documents the binning of a Nitrospira genome from the GWW sample. See [Daims et al., 2015: Complete Nitrification by Nitrospira Bacteria](https://doi.org/10.1038/nature16461) for further details.
+
+## Load the mmgenome package
+The metagenome data is analysed using the [mmgenome package](http://madsalbertsen.github.io/mmgenome/).
+```{r Load_package, message=FALSE, warning=FALSE, results='hide'}
+library("mmgenome")
+```
+
+## Import data
+The Rmarkdown file [Load_data.Rmd](http://madsalbertsen.github.io/mmgenome/Daims_GWW_Load_data.html) describes the loading of the data and can be imported using the `mmimport` function. However, the preprocessed data can also be downloaded directly from figshare: [Daims_GWW](http://dx.doi.org/10.6084/m9.figshare.1613284). Hence, here we import the prepocessed data from figshare instead.
+```{r Load_data, message=FALSE, warning=FALSE, results='hide'}
+load("Daims_GWW.RData")
+```
+
+## Extract Nitrospira 5
+As seen from the overview plots, there are numerous Nitrospira species. This one is located between multiple other species.
+```{r zoomA, fig.width=12, fig.height=10, fig.align='center', message=FALSE, warning=FALSE}
+p <- mmplot(data = d,
+            x = "HPD", 
+            y = "HPF1", 
+            color = "essential", 
+            minlength = 1000,
+            factor.shape = "solid") +
+  scale_x_log10(limits=c(5, 50)) +
+  scale_y_log10(limits=c(50, 200))
+
+#p
+#sel <- mmplot_locator(p)
+
+sel <- data.frame(HPD  =  c(6.99, 6.89, 12.7, 21.3, 29.3, 22.1, 11.3),
+                  HPF1  =  c(123, 91.8, 78.4, 80.7, 110, 153, 151))
+
+mmplot_selection(p, sel)
+```
+
+The scaffolds included in the defined subspace are extracted using the `mmextract` function. 
+```{r extractA}
+dA <- mmextract(d, sel)
+```
+
+The `mmstats` function applies to any extracted object. Hence, it can be used directly on the subset.
+```{r statsA}
+mmstats(dA, ncov = 2)
+```
+
+```{r pairsA, fig.width=12, fig.height=10, fig.align='center'}
+mmplot_pairs(data = dA, 
+             variables = c("HPD", "HPF1","gc", "PC1", "PC2", "PC3"), 
+             minlength = 5000, 
+             color = "essential")
+```
+
+## Clean-up other species (Subset B)
+We do a another selection to remove other Nitrospira scaffolds that were included.
+```{r zoomB, fig.width=12, fig.height=10, fig.align='center', message=FALSE, warning=FALSE}
+p <- mmplot(data = dA,
+            x = "PC1", 
+            y = "PC2", 
+            color = "essential", 
+            minlength = 1000)
+#p
+#sel <- mmplot_locator(p)
+
+sel <- data.frame(PC1  =  c(-0.0593, -0.00267, 0.0788, 0.123, 0.0856, -0.0366),
+                  PC2  =  c(-0.0948, -0.0467, -0.0439, -0.108, -0.216, -0.216))
+
+mmplot_selection(p, sel)
+```
+
+The scaffolds included in the defined subspace are extracted using the `mmextract` function. A few scaffolds are excluded based on network plots.
+```{r extractB}
+dB <- mmextract(dA, sel, exclude = c("9076", "19430"))
+```
+
+The `mmstats` function applies to any extracted object. Hence, it can be used directly on the subset.
+```{r statsB}
+mmstats(dB, ncov = 2)
+```
+
+## Export the scaffolds
+Finally the binned scaffolds are exported.
+```{r export}
+mmexport(data = dB, assembly = assembly, file = "GWW_Nitrospira5.fa")
+```

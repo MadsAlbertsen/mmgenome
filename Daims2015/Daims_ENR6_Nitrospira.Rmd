@@ -1,0 +1,92 @@
+---
+title: "Analysis - Daims Nitrospira Comammox ENR6 assembly"
+author: "Mads Albertsen"
+date: "November 24, 2015"
+output: html_document
+---
+
+## Introduction
+This report documents the binning of a Nitrospira Comammox genome from an enrichment reactor (ENR6). See [Daims et al., 2015: Complete Nitrification by Nitrospira Bacteria](https://doi.org/10.1038/nature16461) for further details.
+
+## Load the mmgenome package
+The metagenome data is analysed using the [mmgenome package](http://madsalbertsen.github.io/mmgenome/).
+```{r Load_package, message=FALSE, warning=FALSE, results='hide'}
+library("mmgenome")
+```
+
+## Import data
+The Rmarkdown file [Load_data.Rmd](http://madsalbertsen.github.io/mmgenome/Daims_MBR_Load_data.html) describes the loading of the data and can be imported using the `mmimport` function. However, the preprocessed data can also be downloaded directly from figshare: [Daims_ENR6](http://dx.doi.org/10.6084/m9.figshare.1613282). Hence, here we import the prepocessed data from figshare instead.
+```{r Load_data, message=FALSE, warning=FALSE, results='hide'}
+load("Daims_ENR6.RData")
+```
+
+## Data overview
+The object `d` contains information on scaffolds and essential genes within the scaffolds. For each scaffold the dataset contains the following information: The columns `ENR4A`, `ENR4E`, `ENR4F` and `ENR6` contain the coverage information from 4 different samples; `PC1`, `PC2` and `PC3` contain coordinates of the three first principal components from a PCA analysis on tetranucleotide frequencies; `essential` contain information taxonomic information for each scaffold based on classification on essential genes.
+```{r overview_names}
+colnames(d$scaffolds)
+```
+
+The basic statistics of the full dataset can be summarised using the `mmstats` function. 
+```{r overview_stats}
+mmstats(d, ncov = 4)
+```
+
+## Binning of the commamox Nitrospira genome
+The combination of the coverage of sample `ENR4A` and `ENR4E` provides the cleanest separation of the two genomes and are used for binning. A subspace is defined that clearly seperates the Nitrospira from the Betaproteobacteria.
+```{r zoomA, fig.width=12, fig.height=10, fig.align='center'}
+p <- mmplot(data = d, x = "ENR4A", y = "ENR4E", log.x = T, log.y = T, color = "essential") 
+
+#p
+#sel <- mmplot_locator(p)
+
+sel <- data.frame(ENR4A  =  c(322, 394, 919, 805, 394),
+                  ENR4E  =  c(296, 542, 525, 256, 200))
+
+mmplot_selection(p, sel)
+```
+
+The scaffolds included in the defined subspace are extracted using the `mmextract` function. 
+```{r extractA}
+dA <- mmextract(d, sel)
+```
+
+The `mmstats` function applies to any extracted object. Hence, it can be used directly on the subset.
+```{r statsA}
+mmstats(dA, ncov = 4)
+```
+
+## Export the scaffolds 
+Now that we are happy with the genome bin, the scaffolds can be exported to a separate fasta file using `mmexport`. The genome were then further reassembled using additional Oxford Nanopore data.
+```{r mmexport}
+mmexport(data=dA, assembly=assembly, file = "Nitrospira_ENR6.fa")
+```
+
+## Figure ED XX
+Figure ED XX in the supplementary of [Daims et al., 2015: Complete Nitrification by Nitrospira Bacteria]() is shown here for complete reproducibility.
+```{r Paper_figure, fig.width=7, fig.height=6, fig.align='center', warning=F, message=F}
+gg_color_hue <- function(n) {
+  hues = seq(15, 375, length=n+1)
+  hcl(h=hues, l=65, c=100)[1:n]
+}
+cols = gg_color_hue(4)
+
+mmplot(data = d, 
+       x = "ENR4A", 
+       y = "ENR6", 
+       log.x = T, 
+       log.y = T, 
+       color = "essential") +
+  scale_x_log10(limits = c(1,1000), breaks = c(1, 10, 100, 1000)) +
+  scale_y_log10(limits = c(1,1000), breaks = c(1, 10, 100, 1000)) +
+  scale_size_area(breaks = c(10000, 50000,  100000, 500000, 1000000), max_size = 20, labels = c(10, 50, 100, 500, 1000), name = "Scaffold Length (Kbp)") +
+  scale_color_manual(name = "Taxonomy", values = cols[c(3,4)]) +
+  ylab("Coverage (Sample ENR6)") +
+  xlab("Coverage (Sample ENR4A)") +
+  theme(panel.background = element_blank(),
+        panel.grid.minor = element_blank(),
+        panel.grid.major = element_blank(),
+        axis.line = element_line(color = "black"),
+        axis.ticks = element_line(color = "black"),
+        axis.text = element_text(color = "black"),
+        legend.key = element_blank())
+```

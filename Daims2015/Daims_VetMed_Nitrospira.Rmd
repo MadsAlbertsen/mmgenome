@@ -1,0 +1,243 @@
+---
+title: "Analysis - Daims Nitrospira Commamox VetMed assembly"
+author: "Mads Albertsen"
+date: "November 24, 2015"
+output: html_document
+---
+
+## Introduction
+This report documents the binning of a Nitrospira Commamox genome from a full-scale wastewater treatment plant (VetMed). See [Daims et al., 2015: Complete Nitrification by Nitrospira Bacteria](https://doi.org/10.1038/nature16461) for further details.
+
+## Load the mmgenome package
+The metagenome data is analysed using the [mmgenome package](http://madsalbertsen.github.io/mmgenome/).
+```{r Load_package, message=FALSE, warning=FALSE, results='hide'}
+library("mmgenome")
+```
+
+## Import data
+The Rmarkdown file [Load_data.Rmd](http://madsalbertsen.github.io/mmgenome/Daims_MBR_Load_data.html) describes the loading of the data and can be imported using the `mmimport` function. However, the preprocessed data can also be downloaded directly from figshare: [Daims_VetMed](http://dx.doi.org/10.6084/m9.figshare.1613287). Hence, here we import the prepocessed data from figshare instead.
+```{r Load_data, message=FALSE, warning=FALSE, results='hide'}
+load("Daims_VetMed.RData")
+```
+
+## Extract Nitrospira
+### Subset A
+The combination of the coverage of sample `VM23` and `VMPS` are used to make an intial extraction that includes the Nitrospira genome.
+```{r zoomA, fig.width=12, fig.height=10, fig.align='center', message=FALSE, warning=FALSE}
+p <- mmplot(data = d, 
+            x = "VM23", 
+            y = "VMPS", 
+            color = "essential", 
+            minlength = 5000,
+            factor.shape = "solid") +
+  xlim(0,20) +
+  ylim(0,5)
+
+#p
+#sel <- mmplot_locator(p)
+
+sel <- data.frame(VM23  =  c(8.75, 10.1, 15.2, 18.5, 18.9, 16.3, 11),
+                  VMPS  =  c(1.67, 2.44, 2.94, 2.74, 1.83, 1.07, 1.06))
+
+mmplot_selection(p, sel)
+```
+
+The scaffolds included in the defined subspace are extracted using the `mmextract` function. 
+```{r extractA}
+dA <- mmextract(d, sel)
+```
+
+The `mmstats` function applies to any extracted object. Hence, it can be used directly on the subset.
+```{r statsA}
+mmstats(dA, ncov = 2)
+```
+
+## Identifying the next subset parameters
+There is still a lot of contaminating scaffolds in the bin. Hence, we look if they can be seperated using another combination of datasets.
+```{r pairsA, fig.width=12, fig.height=10, fig.align='center'}
+mmplot_pairs(data = dA, 
+             variables = c("VM23", "VMPS","gc", "PC1", "PC2", "PC3"), 
+             log = c("VM23", "VMPS"), 
+             minlength = 5000, 
+             color = "essential")
+```
+
+## Using ESOM on tetranucleotide frequencies
+There do not seem to be enough resolution to cleanly seperate the Nitrospira from the rest of the contamination. There might be something in using the coverage from the `VMPS` sample and the `gc` content. However, we can try to use ESOM to further seperate the scaffolds based on tetranucleotide frequency.
+```{r esomA, fig.width=12, fig.height=8, fig.align='center'}
+mmplot(data = dA, 
+       x = "esomx", 
+       y = "esomy", 
+       log.x = F, 
+       log.y = F, 
+       color = "essential", 
+       point.size = 4, 
+       esom.map = esom_map, 
+       esom.color = "grey10", 
+       esom.cut = 0.15, 
+       factor.shape = "solid") 
+```
+
+The ESOM map of tetranucleotides of the whole dataset seem to have better resolution than the PCA. However, there is still not a clean seperation to the Planctomycetes.
+
+## Generating a local ESOM map
+As a final try we do a ESOM on the subset itself. First the scaffolds in the subset is exported and an ESOM is calculated based on this subset outside R using the databionic software. Note that these steps are disabled in the guide as the data is provided in the initial `data("Daims_VetMed.RData")` file
+```{r export_dA, eval = F}
+mmexport(data = dA, assembly = assembly, file = "vetmet_dA.fa")
+```
+
+Then we import the ESOM data.
+```{r esom_import, eval = F}
+esom_names <- read.delim("data/esom_dAp.names", skip = 1, header = F)
+esom_bm <- read.delim("data/esom_dAp.bm", skip = 2, header = F)
+esom_umx <- read.delim("data/esom_dA.umx", skip = 1, header = F)
+
+esom <- mmformat_esom(names = esom_names, 
+                      bm = esom_bm, 
+                      umx = esom_umx, 
+                      xname = "esomx_dA", 
+                      yname = "esomy_dA")
+
+esom_map_dA <- esom$esom_map
+esom_coord_dA <- esom$esom_coord
+```
+
+And finally add it to the excisting data frame.
+```{r esom_add}
+dA <- mmadd(data = dA, 
+            newdata = esom_coord_dA)
+```
+
+For completeness we also import PhyloPythiaS+ taxonomic classification of the scaffolds.
+```{r esom_ppsp, eval = F}
+ppsp_raw <- read.delim(file = "data/ppsp.txt", header = T, skip = 2)
+ppsp <- mmformat_ppsp(ppsp_raw, 
+                      ranks = "phylum", 
+                      ranknames = "ppsp_phylum")
+
+```
+
+And add it to the excising data frame.
+```{r ppsp_add}
+dA <- mmadd(data = dA, 
+            newdata = ppsp)
+```
+
+The ESOM looks better now and it seems like we can remove most of the Planctomycetes contamination.
+```{r esomA2, fig.width=12, fig.height=8, fig.align='center'}
+mmplot(data = dA, 
+       x = "esomx_dA", 
+       y = "esomy_dA", 
+       color = "essential", 
+       point.size = 4, 
+       esom.map = esom_map_dA,
+       esom.color = "grey10",
+       esom.cut = 0.15, 
+       factor.shape = "solid") 
+```
+
+## Subset B
+Using the `local ESOM map` and guided by the coverage in the `VMPS` sampe it is possible to exclude the `Planctomycetes` relatively easy.
+```{r zoomB, fig.width=12, fig.height=8, fig.align='center'}
+p <- mmplot(data = dA, 
+            x = "esomx_dA", 
+            y = "esomy_dA", 
+            color = "VMPS", 
+            point.size = 3, 
+            esom.map = esom_map_dA, 
+            esom.color = "grey10", 
+            esom.cut = 0.15) 
+
+#p
+#sel <- mmplot_locator(p)
+
+sel <- data.frame(esomx_dA  =  c(42.7, 42.7, 36.7, 35.4, 32.9, 30.3, 23.6, 26.2, 30, 23.6, 35.4, 39.3, 41.6, 109, 111, 101, 89.1, 76.5, 74.7, 80.6, 87, 90.4, 106, 108),
+                  esomy_dA  =  c(86.5, 77, 63.3, 55.8, 49.7, 45.8, 39.6, 29.2, 24.2, 17.9, 9.71, 0.487, -2.44, -2.29, 4.29, 15, 21.3, 29.9, 37.8, 45.3, 50.7, 64.9, 78, 87.5))
+
+mmplot_selection(p, sel)
+```
+
+The scaffolds included in the defined subspace are extracted using the `mmextract` function. 
+```{r extractB}
+dB <- mmextract(dA, sel)
+```
+
+From the stats it can be seen that we actually have at least 2 Nitrospira species in the bin. Even though it seems like they can be split using the ESOM map it is not possible to obtain a clean seperation (I've tried..).
+```{r statsB}
+mmstats(dB, ncov = 2)
+```
+
+## Subset C
+To be conservative, we clean the Nitrospira bin further using the complete ESOM map. Here, we select the scaffolds we want to remove.
+```{r zoomC, fig.width=12, fig.height=8, fig.align='center'}
+p <- mmplot(data = dB, 
+            x = "esomx", 
+            y = "esomy", 
+            color = "essential", 
+            esom.map = esom_map,
+            esom.color = "grey10", 
+            esom.cut = 0.15, 
+            factor.shape = "solid") 
+
+#p
+#sel <- mmplot_locator(p)
+
+sel <- data.frame(esomx  =  c(20.2, 45.1, 63.2, 83.8, 92.4, 110, 116, 191, 211, 210, 232, 421, 491, 491, 434, 440, 219, 133, 119, 104, 15.9, 20.2, 105, 46),
+                  esomy  =  c(166, 188, 183, 180, 216, 217, 172, 188, 212, 234, 249, 248, 195, 29.2, 9.8, -4.05, -4.6, 38.1, 15.9, -7.93, -4.6, 22, 54.7, 103))
+
+mmplot_selection(p, sel)
+```
+
+The scaffolds included in the defined subspace are extracted using the `mmextract` function and afterwards we exclude them from the `dB` subset. 
+```{r extractC}
+exclude <- mmextract(dB, sel)
+
+dC <- mmsubset(dB, !(scaffold %in% exclude$scaffolds$scaffold))
+```
+
+```{r statsC}
+mmstats(dC, ncov = 2)
+```
+
+## Using paried-end connections (Subset D)
+Until now we have used coverage and tetranucleotide profiles to extract scaffolds related to our genome of interest. However, some scaffolds might be present in many copies (repeats) and hence have a much higher coverage than the rest of the genome. In addition, some scaffolds will by chance have a slightly different coverage (or tetranucleotide frequency) profile than the rest of the genome and thereby also be missed.
+
+To include repeats and other missed scaffolds we simply extract all scaffolds that are directly connected by paired-end reads to our current subset `dC` using `mmextract_network`. Only scaffolds directly connected to the subset is extracted. 
+```{r network_extractD}
+dD <- mmextract_network(subset = dC, 
+                        original = d, 
+                        network = pe, 
+                        nconnections = 1, 
+                        type = "direct")
+```
+
+```{r statsD}
+mmstats(dD, ncov = 2)
+```
+
+The 16S and 23S rRNA sequences from Nitrospira was not extracted using the above approach. Hence, we include them manually.
+```{r include16S}
+dE <- mmextract(data = dD, 
+                original = d, 
+                include = c("6813", "25466"))
+```
+
+# Final plot
+Finally we take a look at what we extracted. It consists of atleast 2 Nitrospira species.
+```{r finalP, fig.width=12, fig.height=10, fig.align='center'}
+mmplot(data = dE, 
+       x = "VM23", 
+       y = "VMPS", 
+       log.x = T,
+       log.y = T,
+       color = "essential", 
+       factor.shape = "solid") 
+```
+
+## Export the scaffolds
+Finally the binned scaffolds are exported.
+```{r export}
+mmexport(data = dE, 
+         assembly = assembly, 
+         file = "VetMed_Nitrospira_it1.fa")
+```

@@ -1,0 +1,176 @@
+---
+title: "van Kessel Nitrospira 1 Comammox"
+author: "Mads Albertsen"
+date: "November 24, 2015"
+output: html_document
+---
+
+## Introduction
+This report documents the binning of a Nitrospira Comammox genome from an enrichment reactor. See [vanKessel et al., 2015: Complete nitrification by a single microorganism]( http://dx.doi.org/10.1038/nature16459) for further details.
+
+## Load the mmgenome package
+In case you haven't installed the [mmgenome package](http://madsalbertsen.github.io/mmgenome/), see the [Load data example](http://madsalbertsen.github.io/mmgenome/Load_data.html).
+```{r Load_package, message=FALSE, warning=FALSE, results='hide'}
+library("mmgenome")
+```
+
+## Import data
+The Rmarkdown file [Load_data.Rmd](http://madsalbertsen.github.io/mmgenome/vanKessel_Load_data.html) describes the data that is to be loaded. The data is then loaded using the `mmimport` function. The data loading and genome extraction is split to enable cleaner workflows. I.e. you load data once, but extract multiple genomes in their separate Rmarkdown file.
+```{r Load_data, message=FALSE, warning=FALSE, results='hide'}
+load("vanKessel.RData")
+```
+
+## Data overview
+The object `d` contains information on scaffolds and essential genes within the scaffolds. For each scaffold the dataset contains the following information: The columns `CTAB`, `KITpe`, `KITmp` and `KIT` contain the coverage information from 4 different samples; `PC1`, `PC2` and `PC3` contain coordinates of the three first principal components from a PCA analysis on tetranucleotide frequencies; `essential` contain information taxonomic information for each scaffold based on classification on essential genes; `rRNA16S` contain taxonomic information on scaffolds that have an associated 16S rRNA gene.
+```{r overview_names}
+colnames(d$scaffolds)
+```
+
+The basic statistics of the full dataset can be summarised using the `mmstats` function. 
+```{r overview_stats}
+mmstats(d, ncov = 4)
+```
+
+## Nitrospira 1
+### Initial subspace extraction (Figure ED2a)
+In general, the metagenome assembly is very nice and the two Nitrospira genomes can easily be identified. The first Nitrospira genome is located in the same coverage space as a genome from the Phylum Planctomycetes. However, that is removed in the subsequent steps.
+```{r zoomA, fig.width=12, fig.height=10, fig.align='center', warning=F, message=F}
+p <- mmplot(data = d, 
+            x = "CTAB", 
+            y = "KITpe", 
+            color = "essential", 
+            minlength = 10000) 
+
+#p
+#sel <- mmplot_locator(p)
+
+sel <- data.frame(CTAB  =  c(10.2, 11.3, 14.3, 16.7, 15.6, 14.1, 10.5),
+                  KITpe  =  c(9.82, 12.6, 14.1, 11.5, 9.39, 6.93, 7.12))
+
+mmplot_selection(p, sel)  +
+  scale_x_log10(limits = c(1,50), breaks = c(1, 2, 5, 10, 25, 50)) +
+  scale_y_log10(limits = c(1,50), breaks = c(1, 2, 5, 10, 25, 50)) +
+  scale_size_area(breaks = c(10000, 50000,  100000, 500000, 1000000), 
+                  max_size = 20, labels = c(10, 50, 100, 500, 1000), 
+                  name = "Scaffold Length (Kbp)") +
+  scale_color_discrete(name = "Taxonomy") +
+  xlab("Coverage (CTAB)") +
+  ylab("Coverage (Kit)") +
+  theme_classic()
+```
+
+The scaffolds included in the defined subspace are extracted using the `mmextract` function. Note that all scaffolds in the defined subspace is extracted and not just the scaffolds over 10 kbp that was plotted.
+```{r extractA}
+dA <- mmextract(d, sel)
+```
+
+The `mmstats` function applies to any extracted object. Hence, it can be used directly on the subset.
+```{r statsA}
+mmstats(dA)
+```
+
+## Identify the next relevant variables for subsetting
+The function `mmplot_pairs` can visualize a number of different variables at the same time. In this case `PC2` and `PC3` seem like a good choice.
+```{r pairsA, fig.width=12, fig.height=12, fig.align='center', warning=F, message=F}
+mmplot_pairs(data = dA, variables = c("CTAB", "KIT", "gc", "PC1", "PC2", "PC3"))
+```
+
+## Subspace extraction 2 (Figure ED2a-insert)
+We use the same procedure as with the initial subset. However, now the `dA` subset is used as input data.
+```{r color_function, echo=F}
+gg_color_hue <- function(n) {
+  hues = seq(15, 375, length=n+1)
+  hcl(h=hues, l=65, c=100)[1:n]
+}
+
+cols = gg_color_hue(11)
+```
+
+```{r zoomB, fig.width=12, fig.height=10, fig.align='center', warning=F, message=F}
+p <- mmplot(data = dA, 
+            x = "PC2", 
+            y = "PC3", 
+            color = "essential")
+
+#p
+#sel <- mmplot_locator(p)
+
+sel <- data.frame(PC2  =  c(-0.193, -0.179, -0.138, -0.113, -0.127, -0.176),
+                  PC3  =  c(-0.169, -0.142, -0.136, -0.17, -0.197, -0.199))
+
+mmplot_selection(p, sel)  +
+  scale_size_area(breaks = c(10000, 50000,  100000, 500000, 1000000), 
+                  max_size = 20, labels = c(10, 50, 100, 500, 1000), 
+                  name = "Scaffold Length (Kbp)") +
+  scale_color_manual(name = "Taxonomy", values = cols[c(9,10)]) +
+  theme_classic()
+```
+
+```{r extractB}
+dB <- mmextract(dA, sel)
+```
+
+```{r statsB}
+mmstats(dB)
+```
+
+## Using paried-end connections
+Until now we have just used coverage profiles to extract scaffolds related to our genome of interest. However, some scaffolds might be present in many copies (repeats) and hence have a much higher coverage than the rest of the genome. In addition, some scaffolds will by chance have a slightly different coverage profile than the rest of the genome and thereby also be missed.
+
+The function `mmplot_network` can be used to generate a network plot of scaffolds connected by paired-end reads. We start by plotting the scaffolds we have in our current subset.
+```{r networkB, fig.width=10, fig.height=10, fig.align='center'}
+mmplot_network(data = dB, network = mp, nconnections = 5, color = "essential", scale.links = 0.5)
+```
+
+To include repeats and other missed scaffolds we simply extract all scaffolds that are directly connected by mate-pair reads to our current subset `dB` using `mmextract_network`. Only scaffolds directly connected to the subset is extracted. 
+```{r network_extractC}
+dC <- mmextract_network(subset = dB, original = d, network = mp, nconnections = 5, type = "direct")
+```
+
+... and then plot the new subset.
+```{r networkC, fig.width=10, fig.height=10, fig.align='center'}
+mmplot_network(data = dC, network = mp, nconnections = 5, color = "KIT", scale.links = 0.5)
+```
+
+## Subspace extraction 3
+We finally remove the low abundant Nitrospira scaffolds that were included using the mate-pair data.
+```{r zoomD, fig.width=12, fig.height=10, fig.align='center', warning=F, message=F}
+p <- mmplot(data = dC, 
+            x = "CTAB", 
+            y = "KITpe")
+
+#p
+#sel <- mmplot_locator(p)
+
+sel <- data.frame(CTAB  =  c(8.99, 10.4, 36.9, 39.3, 39.4, 28.2, 13.3),
+                  KITpe =  c(7.35, 13, 26.7, 26.7, 25, 9.95, 5.37))
+
+mmplot_selection(p, sel)
+```
+
+```{r extractD}
+dD <- mmextract(dC, sel)
+```
+
+```{r statsD}
+mmstats(dD)
+```
+
+## Export the scaffolds 
+Now that we are happy with the genome bin, the scaffolds can be exported to a separate fasta file using `mmexport`.
+```{r mmexport}
+mmexport(data=dD, assembly=assembly, file = "Nitrospira1.fa")
+```
+
+## Final network plot (Figure ED2c)
+```{r network_final, warning=F, message=F}
+mmplot_network(data = dD, 
+               network = mp,
+               nconnections = 5, 
+               color = "essential", 
+               scale.links = 0.5) +
+  scale_size_area(breaks = c(10000, 50000,  100000, 500000, 1000000), 
+                  max_size = 20, labels = c(10, 50, 100, 500, 1000), 
+                  name = "Scaffold Length (Kbp)") +
+  scale_color_manual(name = "Taxonomy", values = cols[c(9)])
+```

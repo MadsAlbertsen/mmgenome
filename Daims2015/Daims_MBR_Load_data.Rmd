@@ -1,0 +1,74 @@
+---
+title: "Load - Daims Nitrospira Comammox MBR assembly"
+author: "Mads Albertsen"
+date: "November 24, 2015"
+output: html_document
+---
+
+## Load packages
+
+In case you havn't installed all the needed packages, they can be installed via e.g. `install_github("MadsAlbertsen/mmgenome/mmgenome")`.
+```{r Load_packages, message=F,warning=FALSE}
+library("mmgenome")
+options(scipen = 8)
+```
+
+## Load data
+
+The assembly of the MBR metagenome in fasta format is loaded in fasta using the Biostrings package.
+```{r Load_assembly}
+assembly <- readDNAStringSet("data/assembly.fa", format = "fasta")
+```
+
+The coverage data is loaded. Note that each coverage dataset must have the scaffold name in the first column and the coverage in the second coloumn. The name of each coverage dataset reflect when the data was sampled.
+```{r Load_coverage}
+MBR <- read.table("data/MBR.csv", header = T, sep = ",")[,c("Reference.sequence", "Average.coverage")]
+MBR1 <- read.table("data/MBR1.csv", header = T, sep = ",")[,c("Reference.sequence", "Average.coverage")]
+Gel <- read.table("data/Gel.csv", header = T, sep = ",")[,c("Reference.sequence", "Average.coverage")]
+Gel1 <- read.table("data/Gel1.csv", header = T, sep = ",")[,c("Reference.sequence", "Average.coverage")]
+Gel7 <- read.table("data/Gel7.csv", header = T, sep = ",")[,c("Reference.sequence", "Average.coverage")]
+Foam <- read.table("data/Skum.csv", header = T, sep = ",")[,c("Reference.sequence", "Average.coverage")]
+Foam2 <- read.table("data/Skum2.csv", header = T, sep = ",")[,c("Reference.sequence", "Average.coverage")]
+```
+
+The overview of the number of essential genes in each scaffold is loaded.
+```{r Load_essential}
+ess <- read.table("data/essential.txt", header = T, sep = " ")
+```
+
+Load basic taxonomy of the scaffolds. Only scaffolds with essential genes are taxonomic classified.
+```{r Load_tax}
+tax <- read.table("data/tax.txt", header = T, sep = "\t")
+```
+
+Load information on which scaffolds that are connected by either paired-end (PE) or mate-pair (MP) connections.
+```{r Load_network}
+pe <- read.table("data/network_pe.txt", header = T, sep = "\t")
+```
+
+Additional: 16S rRNA infomration.
+```{r Load_Additional_16S}
+rRNA16S <- read.table("data/16S_tax_assignments.txt", header = T, sep = "\t")
+```
+
+## Merge data
+
+The loaded data is merged to a single object. The assembly is used to extract scaffold length, GC contente and tetranucleotide frequencies, which are used for a simple PCA. The `tax.expand` parameter converts a phylum level taxonomic classification to the underlying classes instead. The `tax.freq` parameter removes any classification with less than 50 entries in the complete dataset. The `other` parameter can be used to load any additional datasets.
+```{r Merge_data}
+d <- mmload(assembly = assembly, 
+            coverage = c("MBR1", "Gel1", "Gel7", "Gel", "MBR", "Foam", "Foam2"), 
+            essential = ess,           
+            tax = tax,
+            tax.expand = "Proteobacteria",
+            tax.freq = 50,
+            pca = T,
+            other = "rRNA16S"
+           )
+```
+
+## Save data
+Remove temporary data and save the generated data for easy loading.
+```{r Save_data}
+rm(list = c("ess", "Gel1", "Gel7", "tax", "MBR1", "Gel", "MBR", "Foam", "Foam2", "rRNA16S"))
+save.image(file="Daims_MBR.RData")
+```

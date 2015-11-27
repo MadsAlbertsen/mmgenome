@@ -1,0 +1,115 @@
+---
+title: "Analysis - Overview of the VetMed assembly"
+author: "Mads Albertsen"
+date: "November 24, 2015"
+output: html_document
+---
+## Introduction
+This report documents the VetMed dataset, where a Commamox Nitrospira genome bin was extracted. See [Daims et al., 2015: Complete Nitrification by Nitrospira Bacteria](https://doi.org/10.1038/nature16461) for further details.
+
+## Load the mmgenome package
+```{r Load_package, message=FALSE, warning=FALSE, results='hide'}
+library("mmgenome")
+```
+
+## Import data
+The Rmarkdown file [Load_data.Rmd](http://madsalbertsen.github.io/mmgenome/Daims_VetMed_Load_data.html) describes the loading of the data and can be imported using the `mmimport` function. However, the preprocessed data can also be downloaded directly from figshare: [Daims_VetMed](http://dx.doi.org/10.6084/m9.figshare.1613287). Hence, here we import the prepocessed data from figshare instead.
+```{r Load_data, message=FALSE, warning=FALSE, results='hide'}
+load("Daims_VetMed.RData")
+```
+
+## Data overview
+The object `d` contains information on scaffolds and essential genes within the scaffolds. For each scaffold the dataset contains the following information: The columns `VM23` and `VMPS` contain the coverage information from 4 different samples; `PC1`, `PC2` and `PC3` contain coordinates of the three first principal components from a PCA analysis on tetranucleotide frequencies; `essential` contain information taxonomic information for each scaffold based on classification on essential genes; `rRNA` contain taxonomic information on scaffolds that have an associated 16S rRNA gene; `esomy` and `esomx` are esom coordinates for each scaffold.
+```{r overview_names}
+colnames(d$scaffolds)
+```
+
+The basic statistics of the full dataset can be summarised using the `mmstats` function. 
+```{r overview_stats}
+mmstats(d, ncov = 2)
+```
+
+## Extract nitrospira scaffolds
+Scaffolds with essential genes classified to Nitrospira are extracted for a cleaner visualisation later.
+```{r nit}
+nit <- subset(d$scaffolds, essential == "Nitrospirae")
+```
+
+## Overview plot
+The assembly is decent even though it is from a full-scale sample with a high degree of micro-diversity.
+```{r overview, fig.width=12, fig.height=10, fig.align='center', warning=FALSE, message=FALSE, echo=FALSE}
+mmplot(data = d, 
+       x = "VM23", 
+       y = "VMPS", 
+       color = "essential", 
+       minlength = 5000,
+       factor.shape = "solid") +
+  scale_x_log10(limits=c(0.1, 200), breaks = c(0.1,1,10,100)) +
+  scale_y_log10(limits=c(0.1, 200), breaks = c(0.1,1,10,100)) +
+  scale_size_area(breaks = c(10000, 50000,  100000, 500000, 1000000), max_size = 15, labels = c(10, 50, 100, 500, 1000), name = "Scaffold Length (Kbp)") +
+  scale_color_discrete(name = "Taxonomy") +
+  xlab("Coverage (VetMed 2+3)") +
+  ylab("Coverage (VetMed PSkit)") +
+  theme(panel.background = element_blank(),
+        panel.grid.minor = element_blank(),
+        panel.grid.major = element_blank(),
+        axis.line = element_line(color = "black"),
+        axis.ticks = element_line(color = "black"),
+        axis.text = element_text(color = "black"),
+        legend.key = element_blank())
+```
+
+## Overview plot - Nitrospira
+Here the scaffolds that contains essential genes from Nitrospira are highlighted. Note that there is 1 abundant Nitrospira species and also some micro-diversity (highlighted with red).
+```{r overview_nit, fig.width=12, fig.height=10, fig.align='center', warning=FALSE, message=FALSE, echo=FALSE}
+mmplot(data = d, 
+       x = "VM23", 
+       y = "VMPS", 
+       color = "essential", 
+       minlength = 5000,
+       factor.shape = "solid") +
+  geom_point(data = nit, color = "red") +
+  scale_x_log10(limits=c(0.1, 200), breaks = c(0.1,1,10,100)) +
+  scale_y_log10(limits=c(0.1, 200), breaks = c(0.1,1,10,100)) +
+  scale_size_area(breaks = c(10000, 50000,  100000, 500000, 1000000), max_size = 15, labels = c(10, 50, 100, 500, 1000), name = "Scaffold Length (Kbp)") +
+  scale_color_discrete(name = "Taxonomy") +
+  xlab("Coverage (VetMed 2+3)") +
+  ylab("Coverage (VetMed PSkit)") +
+  theme(panel.background = element_blank(),
+        panel.grid.minor = element_blank(),
+        panel.grid.major = element_blank(),
+        axis.line = element_line(color = "black"),
+        axis.ticks = element_line(color = "black"),
+        axis.text = element_text(color = "black"),
+        legend.key = element_blank())
+```
+
+## Overview ESOM - Essential genes
+As we only have 2 timepoints the analysis is supplemented with ESOM of tetranucleotide frequencies.
+```{r esom_es, fig.width=12, fig.height=7, fig.align='center', warning=FALSE, message=FALSE, echo=FALSE}
+mmplot(data = d, 
+       x = "esomx", 
+       y = "esomy", 
+       log.x = F, 
+       log.y = F, 
+       color = "essential", 
+       point.size = 4, 
+       esom.map = esom_map, 
+       esom.color = "grey10", 
+       esom.cut = 0.15, 
+       factor.shape = "solid", 
+       minlength = 3000) 
+```
+
+## Overview ESOM - GC
+As we only have 2 timepoints the analysis is supplemented with ESOM of tetranucleotide frequencies.
+```{r esom_gc, fig.width=12, fig.height=7, fig.align='center', warning=FALSE, message=FALSE, echo=FALSE}
+mmplot(data = d, 
+       x = "esomx",
+       y = "esomy", 
+       log.x = F, 
+       log.y = F, 
+       color = "gc", 
+       point.size = 4, 
+       minlength = 3000) 
+```

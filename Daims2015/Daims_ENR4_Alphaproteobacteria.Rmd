@@ -1,0 +1,86 @@
+---
+title: "Analysis - Daims Alphaproteobacteria ENR4 assembly"
+author: "Mads Albertsen"
+date: "November 24, 2015"
+output: html_document
+---
+
+## Introduction
+This report documents the binning of a Alphaproteobacterial genome from an enrichment reactor (ENR4).See [Daims et al., 2015: Complete Nitrification by Nitrospira Bacteria](https://doi.org/10.1038/nature16461) for further details.
+
+## Load the mmgenome package
+In case you haven't installed the [mmgenome package](http://madsalbertsen.github.io/mmgenome/), see the [Load data example](http://madsalbertsen.github.io/mmgenome/Load_data.html).
+```{r Load_package, message=FALSE, warning=FALSE, results='hide'}
+library("mmgenome")
+```
+
+## Import data
+The Rmarkdown file [Load_data.Rmd](http://madsalbertsen.github.io/mmgenome/Load_data_ENR4.html) describes the loading of the data and can be imported using the `mmimport` function. However, the preprocessed data can also be downloaded directly from figshare: [Daims_ENR4](http://dx.doi.org/10.6084/m9.figshare.1613277). Hence, here we import the prepocessed data from figshare instead.
+```{r Load_data, message=FALSE, warning=FALSE, results='hide'}
+load("Daims_ENR4.RData")
+```
+
+## Data overview
+The object `d` contains information on scaffolds and essential genes within the scaffolds. For each scaffold the dataset contains the following information: The columns `ENR4A`, `ENR4E`, `ENR4F` and `ENR6` contain the coverage information from 4 different samples; `PC1`, `PC2` and `PC3` contain coordinates of the three first principal components from a PCA analysis on tetranucleotide frequencies; `essential` contain information taxonomic information for each scaffold based on classification on essential genes; `rRNA` contain taxonomic information on scaffolds that have an associated 16S rRNA gene.
+```{r overview_names}
+colnames(d$scaffolds)
+```
+
+The basic statistics of the full dataset can be summarised using the `mmstats` function. 
+```{r overview_stats}
+mmstats(d, ncov = 4)
+```
+
+
+## Alphaproteobacteria
+The combination of the coverage of sample `ENR4A` and `ENR4E` provides the cleanest separation of the genomes and are used for binning. A subspace is defined that clearly seperates the Alphaproteobacteria from the three other species.
+```{r zoomA, fig.width=12, fig.height=10, fig.align='center'}
+p <- mmplot(data = d, x = "ENR4A", y = "ENR4E", log.x = T, log.y = T, color = "essential") 
+
+#p
+#sel <- mmplot_locator(p)
+
+sel <- data.frame(ENR4A  =  c(4.54, 7.03, 13, 14, 8.58, 5.06),
+                  ENR4E  =  c(9.97, 19.8, 21.8, 12.1, 7.55, 8.2))
+
+mmplot_selection(p, sel)
+```
+
+```{r extractA}
+dA <- mmextract(d, sel)
+```
+
+```{r statsA}
+mmstats(dA, ncov = 3)
+```
+
+## Using paried-end connections
+Until now we have just used coverage profiles to extract scaffolds related to our genome of interest. However, some scaffolds might be present in many copies (repeats) and hence have a much higher coverage than the rest of the genome. In addition, some scaffolds will by chance have a slightly different coverage profile than the rest of the genome and thereby also been missed.
+
+The function `mmplot_network` can be used to generate a network plot of scaffolds connected by paired-end reads. We start by plotting the scaffolds we have in our current subset.
+
+```{r networkB, fig.width=10, fig.height=10, fig.align='center'}
+mmplot_network(data = dA, network = pe, nconnections = 5, color = "essential", scale.links = 0.5)
+```
+
+All scaffolds seem to be nicely connected. However, it seems like a few repeats will prevent much further improvement to the assembly. To include repeats and other missed scaffolds we simply extract all scaffolds that are directly connected by paired-end reads to our current subset dB using mmextract_network. Only scaffolds directly connected to the subset is extracted.
+
+```{r network_extractC}
+dB <- mmextract_network(subset = dA, original = d, network = pe, nconnections = 5, type = "direct")
+```
+
+... and then plot the new subset. It seems like all scaffolds were already included in the initial subset.
+```{r networkC, fig.width=10, fig.height=10, fig.align='center'}
+mmplot_network(data = dB, network = pe, nconnections = 5, color = "ENR4A", scale.links = 0.5)
+```
+
+... this can also be seen by looking at the stats.
+```{r statsD}
+mmstats(dB, ncov = 4)
+```
+
+## Export the scaffolds 
+Now that we are happy with the genome bin, the scaffolds can be exported to a separate fasta file using `mmexport`. The genome were then re-assembled using the reads in the genome bin using the SPAdes assembler.
+```{r mmexport}
+mmexport(data=dB, assembly=assembly, file = "Alphaproteobacteria.fa")
+```

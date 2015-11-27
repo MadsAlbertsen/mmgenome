@@ -1,0 +1,73 @@
+---
+title: "Load data - van Kessel Nitrospira 1 Comammox"
+author: "Mads Albertsen"
+date: "November 24, 2015"
+output: html_document
+---
+
+## Load packages
+
+In case you havn't installed all the needed packages, they can be installed via e.g. `install_github("MadsAlbertsen/mmgenome/mmgenome")`.
+```{r Load_packages, message=F,warning=FALSE}
+library("mmgenome")
+options(scipen = 8)
+```
+
+## Load data
+
+The assembly in fasta format is loaded in fasta using the Biostrings package.
+```{r Load_assembly}
+assembly <- readDNAStringSet("data/assembly.fa", format = "fasta")
+```
+
+The coverage data is loaded. Note that each coverage dataset must have the scaffold name in the first column and the coverage in the second coloumn. The name of each coverage dataset reflect when the data was sampled.
+```{r Load_coverage}
+CTAB <- read.table("data/T67.csv", header = T, sep = ",")[,c("Reference.sequence", "Average.coverage")]
+KITpe <- read.table("data/T68.csv", header = T, sep = ",")[,c("Reference.sequence", "Average.coverage")]
+KITmp <- read.table("data/mp.csv", header = T, sep = ",")[,c("Reference.sequence", "Average.coverage")]
+KIT <- KITpe
+KIT$Average.coverage <- KITpe$Average.coverage + KITmp$Average.coverage
+```
+
+The overview of the number of essential genes in each scaffold is loaded.
+```{r Load_essential}
+ess <- read.table("data/essential.txt", header = T, sep = " ")
+```
+
+Load basic taxonomy of the scaffolds. Only scaffolds with essential genes are taxonomic classified.
+```{r Load_tax}
+tax <- read.table("data/tax.txt", header = T, sep = "\t")
+```
+
+Load information on which scaffolds that are connected by either paired-end (PE) or mate-pair (MP) connections.
+```{r Load_network}
+pe <- read.table("data/network_pe.txt", header = T, sep = "\t")
+mp <- read.table("data/network_mp.txt", header = T, sep = "\t")
+```
+
+Additional: 16S rRNA infomration.
+```{r Load_Additional_16S}
+rRNA16S <- read.table("data/16S.txt", header = T, sep = "\t")
+```
+
+## Merge data
+
+The loaded data is merged to a single object. The assembly is used to extract scaffold length, GC contente and tetranucleotide frequencies, which are used for a simple PCA. The `tax.expand` parameter converts a phylum level taxonomic classification to the underlying classes instead. The `tax.freq` parameter removes any classification with less than 50 entries in the complete dataset. The `other` parameter can be used to load any additional datasets.
+```{r Merge_data}
+d <- mmload(assembly = assembly, 
+            coverage = c("CTAB", "KITpe", "KITmp", "KIT"), 
+            essential = ess,           
+            tax = tax,
+            tax.expand = "Proteobacteria",
+            tax.freq = 85,
+            other = "rRNA16S",
+            pca = T
+           )
+```
+
+## Save data
+Remove temporary data and save the generated data for easy loading.
+```{r Save_data}
+rm(list = c("ess", "rRNA16S", "KIT", "CTAB", "KITpe", "KITmp", "tax"))
+save.image(file="vanKessel.RData")
+```
