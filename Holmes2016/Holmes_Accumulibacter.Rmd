@@ -1,0 +1,104 @@
+---
+title: "Holmes - Accumilibacter genome extraction"
+author: "Mads Albertsen"
+date: "June 28, 2016"
+output: html_document
+---
+
+## Introduction
+This report documents the initial genome extraction of *Candidatus* Accumulibacter aalborgensis in [Albertsen et al., 2016: “Candidatus Propionivibrio aalborgensis”: a novel glycogen accumulating organism abundant in full-scale enhanced biological phosphorus removal plants](http://journal.frontiersin.org/article/10.3389/fmicb.2016.01033/abstract).
+
+## Load the mmgenome package
+In case you haven't installed the [mmgenome package](http://madsalbertsen.github.io/mmgenome/), see the [Load data example](http://madsalbertsen.github.io/mmgenome/Load_data.html).
+```{r Load_package, message=FALSE, warning=FALSE, results='hide'}
+library("mmgenome")
+```
+
+## Import data
+The Rmarkdown file [Load_data.Rmd](http://madsalbertsen.github.io/mmgenome/Load_data_Holmes.html) describes the loading of the data and can be imported using the `mmimport` function. However, the preprocessed data can also be downloaded directly from figshare: [Holmes](https://dx.doi.org/10.6084/m9.figshare.3465371.v1). Hence, here we import the prepocessed data from figshare instead.
+```{r Load_data, message=FALSE, warning=FALSE, results='hide'}
+load("Holmes.RData")
+```
+
+## Data overview
+The object `d` contains information on scaffolds and essential genes within the scaffolds. For each scaffold the dataset contains the following information: The columns `H09.06`, `H11.05`, `H11.25`, `H12.13` and `H12.09` contain the coverage information from 5 different samples; `PC1`, `PC2` and `PC3` contain coordinates of the three first principal components from a PCA analysis on tetranucleotide frequencies; `essential` contain information taxonomic information for each scaffold based on classification on essential genes; `rRNA` contain taxonomic information on scaffolds that have an associated 16S rRNA gene; `pps_xxx` contain taxonomic information obtained using [PhyloPythiaS+](http://arxiv.org/abs/1406.7123).
+```{r overview_names}
+colnames(d$scaffolds)
+```
+
+The basic statistics of the full dataset can be summarised using the `mmstats` function. 
+```{r overview_stats}
+mmstats(d, ncov = 5)
+```
+
+## Accumulibacter
+The combination of the coverage of sample `H11.25` and `H11.05` provides the cleanest separation of the two genomes and are used for binning. 
+```{r zoomA, fig.width=12, fig.height=10, fig.align='center'}
+p <- mmplot(data = d, x = "H11.25", y = "H11.05", log.x = T, log.y = T, color = "essential", minlength = 3000)
+
+#p
+#sel <- mmplot_locator(p)
+
+sel <- data.frame(H11.25  =  c(413, 641, 1350, 1370, 569),
+                  H11.05  =  c(1.03, 1.99, 1.57, 0.614, 0.506))
+
+mmplot_selection(p, sel) +
+  theme(axis.line.x = element_line(), 
+        axis.line.y = element_line())
+```
+
+The scaffolds included in the defined subspace are extracted using the `mmextract` function. 
+```{r extractA}
+dA <- mmextract(d, sel)
+```
+
+The `mmstats` function applies to any extracted object. Hence, it can be used directly on the subset.
+```{r statsA}
+mmstats(dA, ncov = 5)
+```
+
+## Using paried-end connections
+Until now we have just used coverage profiles to extract scaffolds related to our genome of interest. However, some scaffolds might be present in many copies (repeats) and hence have a much higher coverage than the rest of the genome. In addition, some scaffolds will by chance have a slightly different coverage profile than the rest of the genome and thereby also be missed.
+
+The function `mmplot_network` can be used to generate a network plot of scaffolds connected by paired-end reads. We start by plotting the scaffolds we have in our current subset.
+
+```{r plot_networkA, fig.align='center', fig.height=10, fig.width=12}
+mmplot_network(data = dA, network = pe, color = "H11.25", nconnections = 10, log.color = T)
+```
+
+To include repeats and other missed scaffolds we simply extract all scaffolds that are directly connected by paired-end reads to our current subset `dB` using `mmextract_network`. Only scaffolds directly connected to the subset is extracted. 
+```{r networkB}
+dB <- mmextract_network(subset = dA, original = d, network = pe, nconnections = 10, type = "direct")
+```
+
+## Subspace extraction 2
+We finally remove the low abundant scaffolds that were included using the paired-end data.
+```{r zoomB, fig.width=12, fig.height=10, fig.align='center'}
+p <- mmplot(data = dB, x = "H11.25", y = "H12.13", log.x = T, log.y = T, color = "essential")
+
+#p
+#sel <- mmplot_locator(p)
+
+sel <- data.frame(H11.25  =  c(420, 535, 1600, 17400, 15500, 3150, 415),
+                  H12.13  =  c(137, 65.1, 98.8, 2010, 4000, 1580, 240))
+
+mmplot_selection(p, sel) +
+  theme(axis.line.x = element_line(), 
+        axis.line.y = element_line())
+```
+
+Extract the scaffolds in the selection.
+```{r extractC}
+dC <- mmextract(dB, sel)
+```
+
+Look at the basic stats.
+```{r statsC}
+mmstats(dC, ncov = 5)
+```
+
+## Export the scaffolds 
+Now that we are happy with the genome bin, the scaffolds can be exported to a separate fasta file using `mmexport`.
+```{r mmexport}
+mmexport(data=dC, assembly=assembly, file = "Accumulibacter.fa")
+```
