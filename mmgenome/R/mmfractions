@@ -1,0 +1,27 @@
+#' Calculates the fraction a bin accounts for in all of the different coverage files
+#'
+#' @usage mmfractions(fullset, bin, ncov)
+#'
+#' @param fullset The dataframe containing all data.
+#' @param bin The dataframe containing the genome bin
+#' @param ncov The number of coverage datasets (default = 2).
+#' 
+#' @return Fractions of the bin
+#' 
+#' @export
+#' @author Rasmus Kirkegaard \email{rhk@bio.aau.dk}
+#' @author Mads Albertsen \email{MadsAlbertsen85@@gmail.com}
+#' 
+#' @examples
+#' 
+#' \dontrun{
+#' mmfractions(fullset = d,bin = dA,ncov = 5)
+#' }
+
+mmfractions<- function(fullset=d,bin=dA,ncov=1){
+  fullstats<-mmstats(data = fullset, ncov = ncov)
+  binstats<-mmstats(data = bin, ncov = ncov)
+  fractions<-round(binstats["Length.total",]/fullstats["Length.total",]*binstats[7:(ncov+6),]/fullstats[7:(ncov+6),]*100,2)
+  names(fractions)<-gsub(pattern = "Coverage",replacement = "Fraction(%)",x = row.names(fullstats)[7:(ncov+6)])
+  return(fractions)
+}
