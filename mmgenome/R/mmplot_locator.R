@@ -12,7 +12,7 @@
 #' @export
 #' @import grid
 #' @import ggplot2
-#' @author Soren M. Karst \email{smk@@bio.aau.dk}
+#' @author Soren M. Karst \email{sorenkarst@gmail.com}
 #' @author Mads Albertsen \email{MadsAlbertsen85@@gmail.com}
 #' 
 #' @examples
@@ -28,29 +28,64 @@
 #' mmplot_selection(p, sel)
 #' }
 
-mmplot_locator <- function(p, sig=3){
-  pi <- ggplot_build(p)
-  x <- unlist(lapply(pi$data, function(l){l$x}))
-  y <- unlist(lapply(pi$data, function(l){l$y})) 
-  x <- x[!is.infinite(x)]
-  y <- y[!is.infinite(y)]
-  n = 100
-  d <- data.frame(matrix(as.numeric(), 0, 2))
-  colnames(d) <- c(pi$plot$mapping$x, pi$plot$mapping$y)
+mmplot_locator <- function(p, trans_x="", trans_y = "", sig=3, network = F){
+  # Arguments
+  point_max <- 100
   
-  for (i in 1:n){    
-    seekViewport('panel.3-4-3-4', recording=TRUE) 
-    pushViewport(dataViewport(x,y))
+  # Build ggplot object
+  suppressWarnings(ggobj <- ggplot_build(p))
+  
+  # Extract coordinates
+  xr <- ggobj$layout$panel_ranges[[1]]$x.range
+  yr <-ggobj$layout$panel_ranges[[1]]$y.range
+  
+  # Variable for selected points
+  sp <- data.frame(x = as.numeric(), y = as.numeric())
+  colnames(sp) <- c(ggobj$plot$mapping$x, ggobj$plot$mapping$y)
+  
+  # Plot and move to plot area viewport
+  suppressWarnings(print(ggobj$plot))
+  panels <- unlist(current.vpTree()) %>%
+    grep("panel", ., fixed = TRUE, value = TRUE)
+  p_n <- length(panels)
+  if (p_n == 0){
+    stop("No plot detected")
+  }
+  if (p_n > 1){
+    stop("Multiple-panel plot is not supported")  
+  }
+  seekViewport(panels, recording=TRUE)
+  pushViewport(viewport(width=1, height=1))
+  
+  # Select point, plot, store and repeat
+  for (i in 1:point_max){
     tmp <- grid.locator('native')
     if (is.null(tmp))break
     grid.points(tmp$x,tmp$y, pch = 16, gp=gpar(cex=0.5, col="darkred"))
-    d[i, ] <- as.numeric(tmp)
+    sp[i, ] <- as.numeric(tmp)
   }
-  grid.polygon(x= unit(d[,1], "native"), y= unit(d[,2], "native"), gp=gpar(fill=NA))
+  grid.polygon(x= unit(sp[,1], "native"), y= unit(sp[,2], "native"), gp=gpar(fill=NA))
   
-  if (pi$panel$x_scales[[1]]$trans$name == "log-10") d[,1] <- 10^(d[,1])
-  if (pi$panel$y_scales[[1]]$trans$name == "log-10") d[,2] <- 10^(d[,2])
-  show(paste(colnames(d)[1]," = ",list(signif(d[,1],sig))))
-  show(paste(colnames(d)[2]," = ",list(signif(d[,2],sig))))
-  return(d)
+  # Scale data values
+  sp[,1] <- (max(xr)- min(xr)) * sp[,1] + min(xr)
+  sp[,2] <- (max(yr)- min(yr)) * sp[,2] + min(yr)
+  if (trans_x == "log10" & network == F) sp[,1] <- 10^(sp[,1])
+  if (trans_y == "log10" & network == F) sp[,2] <- 10^(sp[,2])
+  if (trans_x == "sqrt" & network == F) sp[,1] <- (sp[1, ])^(sp[,1])
+  if (trans_y == "sqrt" & network == F) sp[,2] <- (sp[2, ])^(sp[,2])
+  
+  if (network == F){
+    # Write values to console
+    show(paste(colnames(sp)[1], " = ", list(signif(sp[,1], sig))))
+    show(paste(colnames(sp)[2], " = ", list(signif(sp[,2], sig))))
+    # Return selected points dataframe
+    return(sp)
+  }
+  if (network == T){
+    # Extract numbers
+    in.selection <- point.in.polygon(ggobj$plot$data$x, ggobj$plot$data$y, sp[,1], sp[,2], mode.checked=T) > 0
+    scaffolds <- as.character(ggobj$plot$data$scaffold[in.selection])
+    dput(scaffolds)
+    return(scaffolds)
+  }
 }
