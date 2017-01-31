@@ -33,7 +33,33 @@
 #' dA <- mmextract(d, sel)
 #' }
 
-mmextract <-  function(data, selection = NULL, minlength = NULL, exclude = NULL, include = NULL, original = NULL){
+mmextract <-  function(data, selection = NULL, minlength = NULL, exclude = F, include = NULL, original = NULL){
+  # Define variables
+  s <- selection
+  # Selection extraction
+  if (!is.null(s)){
+    # Selection based on scaffold names
+    if (is.vector(s) & is.character(s){
+      out <- s
+    }
+    # Selection based on coordinates
+    if (is.data.frame(s) & length(s) == 2 & is.numeric(unlist(s)){
+      ins <- point.in.polygon(data$scaffolds[[names(s)[1]]], data$scaffolds[[names(s)[1]]], s[[1]], s[[2]], mode.checked=T)
+      out <- scf[ins, "scaffold"] 
+    } else {
+      stop("Selection has wrong format. Selection must either be a character vector of scaffolds names or a numeric data.frame of variables.")
+    }
+  }
+  # Subtract or add selection to original subset
+  if (!is.null(original)){
+    if(exclude == T){
+      original
+    }
+  }
+
+
+  
+  # Selection based on area
 ### To extract only using scaffold names
   if (is.null(selection) & !is.null(include)){
     out <- subset(original$scaffold, scaffold %in% c(include, data$scaffolds$scaffold))
