@@ -11,7 +11,7 @@
 #' @param log A vector of variables to log scale.
 #' @param log.color Log scale the color (default: F).
 #' @param resize Rescale the size of the scaffolds (default: 1).
-#' @param textsize Size of the legend text (deafult = 8).
+#' @param textsize Size of the legend text (default = 8).
 #' @param point.size Use a fixed size for points instead of scaffold length.
 #' @param highlight Mark selected scaffolds on the plot. Either as a vector of scaffold names or as a full subset of data.
 #' @param hightlight.color Color of the highlighted scaffolds (default: "darkred").
