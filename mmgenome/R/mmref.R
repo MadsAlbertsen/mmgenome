@@ -38,7 +38,7 @@
 #' 
 #' mmref(tax.level = "Phylum", tax.compare = "Proteobacteria", tax.aggregate = "Class", summarise = "median", data = dA)}
 
-mmref <- function(data = NULL, tax.level="Phylum", tax.compare, tax.aggregate = tax.level, summarise = "mean", output = "plot", plot.display = T, plot.sort = T){
+mmref <- function(data = NULL, tax.level="Phylum", tax.compare = "all", tax.aggregate = tax.level, summarise = "mean", output = "plot", plot.display = T, plot.sort = T){
   
   ### Load the reference data
   data(eg)
@@ -52,7 +52,7 @@ mmref <- function(data = NULL, tax.level="Phylum", tax.compare, tax.aggregate = 
   ### Summarise the HMM counts as either mean or medians
   hcount <- ddply(em, c(tax.aggregate,"HMM"), summarize, median = median(Count), mean = mean(Count))  
   
-  ### Load essential gene informatio from the extracted genome bin
+  ### Load essential gene information from the extracted genome bin
   if (!is.null(data)){
     if (length(data) != 2){
       stop(paste("There is no data on essential genes in the supplied data!"))
