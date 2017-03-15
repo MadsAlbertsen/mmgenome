@@ -14,6 +14,7 @@
 #' @param hightlight.color Color of the highlighted scaffolds (default: "darkred").
 #' @param print.nolinks Print scaffolds with no links to the console (default: F).
 #' @param links.scale Scale the width of the links between scaffolds by a constant (default: 1).
+#' @param seed Set the seed to obtain reproducible graph layout. Usefull when using mmplot_locator.
 #' 
 #' @return A ggplot2 object.
 #' 
@@ -44,33 +45,28 @@
 #' }
 
 
-mmplot_network <- function(data, network, nconnections = 2, labels = F, color = "gc", log.color = F, highlight = NULL, highlight.color = "darkred", print.nolinks = F, scale.links = 1){
+mmplot_network <- function(data, network, nconnections = 2, labels = F, color = "gc", log.color = F, highlight = NULL, highlight.color = "darkred", print.nolinks = F, scale.links = 1, seed = NULL){
 
   ## Subset the network
-  
   snetwork <- subset(network, network$scaffold1 %in% data$scaffolds$scaffold & network$scaffold2 %in% data$scaffolds$scaffold & network$connections >= nconnections)
   
   ## Convert to graph 
-  
   g <- graph.data.frame(snetwork, directed = F)
   
-  ## Calculate a layout   
-  
+  ## Calculate a layout
+  if (!is.null(seed)) set.seed(seed)
   t <- layout_with_fr(g)  
 
   ## Extract layout coordinates
-  
   gpoints <- data.frame( "scaffold" = V(g)$name, "x" = t[,1], "y" = t[,2])
   gpoints1 <- merge(gpoints, data$scaffolds)
   
   ## Extract link coordinates 
-  
   links <- merge(snetwork, gpoints1[,1:3], by.x = "scaffold1", by.y = "scaffold")
   links1 <- merge(links, gpoints1[,1:3], by.x = "scaffold2", by.y = "scaffold")
   colnames(links1)[4:7] <- c("x", "y", "xend", "yend")
   
   ## Plot the data
-  
   if (class(data$scaffolds[,color]) == "factor"){
     p <- ggplot(data = gpoints1, aes_string(x = "x", y = "y", size = "length", color = color)) +
       geom_segment(data=links1, aes(x=x, y=y, xend=xend, yend=yend), color = "darkgrey", size = log10(links1$connections)*scale.links) +
@@ -117,7 +113,6 @@ mmplot_network <- function(data, network, nconnections = 2, labels = F, color = 
       sdata <- subset(gpoints1, scaffold %in% highlight$scaffolds$scaffold)
       p <- p + geom_text(data = sdata, color = highlight.color, size = 4, label = sdata$scaffold)  
     }
-    
   }
   
   if(print.nolinks == T){
@@ -126,5 +121,9 @@ mmplot_network <- function(data, network, nconnections = 2, labels = F, color = 
     print(nolinks)
   }
   
+  ### Add identifier-tag for utility functions
+  attr(p, "comment") <- "mmplot_network"
+  
+  ### Output
   return(p)
 }

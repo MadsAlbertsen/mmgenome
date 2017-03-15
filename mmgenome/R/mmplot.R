@@ -159,7 +159,6 @@ mmplot <- function(data, x, y, log.x=F, log.y=F, color = "essential", minlength 
     } else{
       p <- p + geom_point(data = highlight$scaffold, color = highlight.color, shape = 1)  
     }
-    
   }
   
   p <- p + theme(panel.background = element_blank(),
@@ -182,5 +181,9 @@ mmplot <- function(data, x, y, log.x=F, log.y=F, color = "essential", minlength 
             axis.text = element_blank())
   }
   
+  ### Add identifier-tag for utility functions
+  attr(p, "comment") <- "mmplot"
+  
+  ### Output
   return(p)
 }
