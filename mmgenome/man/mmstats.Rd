@@ -7,9 +7,11 @@
 mmstats(data, ncov)
 }
 \arguments{
-\item{data}{The dataframe containing all data.}
+\item{data}{The dataframe containing the bin data (e.g. dA).}
 
 \item{ncov}{The number of coverage datasets (default = 2).}
+
+\item{data_compare}{The dataframe containing the all data (e.g. d).}
 }
 \value{
 An overview of key statistics of the scaffolds.

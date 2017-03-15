@@ -5,7 +5,11 @@ mmgenome: Tools for extracting genomes from metagenomes
 
 ## Changelog
 
-## 0.7.0
+### 0.7.1
+#### Enhancements
+ - mmstats: Now icludes an option to compare the coverage as a fraction of the original dataset (Kirk3gaard).
+
+### 0.7.0
 #### Bugfix
  - mmplot_locator: Updated to handle the new format of ggplot2 objects (>v. 1.0.0).
 
