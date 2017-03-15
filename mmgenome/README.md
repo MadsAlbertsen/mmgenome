@@ -5,6 +5,10 @@ mmgenome: Tools for extracting genomes from metagenomes
 
 ## Changelog
 
+## 0.7.0
+#### Bugfix
+ - mmplot_locator: Updated to handle the new format of ggplot2 objects (>v. 1.0.0).
+
 ### 0.6.3
 #### Bugfix
  - mmplot_network: Updated to the newest version of igraph. Igraph changed function and variable names.
