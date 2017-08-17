@@ -23,5 +23,6 @@ Depends:
     igraph (>= 1.0.0),
     reshape2 (>= 1.4),
     dplyr (>= 0.4.0) ,
-	Rtsne.multicore (>= 0.0.99)
+    Rtsne.multicore (>= 0.0.99)
+Remotes: RGLab/Rtsne.multicore
 RoxygenNote: 6.0.1
