@@ -35,7 +35,7 @@
 #'             )
 #' }
 
-mmload <- function(assembly, coverage, essential = NULL, pca = T, pca.ncomp = 3, tax = NULL, tax.freq = 20, tax.clean = T, tax.expand = NULL, other = NULL){
+mmload <- function(assembly, coverage, essential = NULL, pca = T, pca.ncomp = 3, tax = NULL, tax.freq = 20, tax.clean = T, tax.expand = NULL, other = NULL, BH_SNE = F, threads = 2){
   
   ##### Load coverage, gc and length #####
   
@@ -43,7 +43,7 @@ mmload <- function(assembly, coverage, essential = NULL, pca = T, pca.ncomp = 3,
   out <- cbind.data.frame(names(assembly), width(assembly), letterFrequency(assembly, letters = c("CG"), as.prob=T)*100)  
   colnames(out) <- c("scaffold","length","gc")
   out$scaffold <- as.character(out$scaffold)
-    
+  
   for (i in 1:length(coverage)){
     data <- get(coverage[i])
     if (ncol(data) != 2){
@@ -75,6 +75,21 @@ mmload <- function(assembly, coverage, essential = NULL, pca = T, pca.ncomp = 3,
     kmer <- (kmer_for + kmer_revC)/2*100
     rda <- rda(kmer[,2:ncol(kmer)])
     res <- cbind.data.frame(scaffold = as.character(names(assembly)), scores(rda,choices=1:pca.ncomp)$sites)
+    out <- merge(x = out, y = res, by = "scaffold")
+  }
+  
+  if (BH_SNE == T){
+    set.seed(42) # Sets seed for reproducibility
+    if (pca == F) {
+      print("Be patient calculating kmer sitributions")
+      kmer_for<-oligonucleotideFrequency(assembly, 4, as.prob=T)
+      kmer_revC <- oligonucleotideFrequency(reverseComplement(assembly), 4, as.prob=T)
+      kmer <- (kmer_for + kmer_revC)/2*100
+    }
+    print("Be patient calculating BH-SNE")
+    tsne_out <- Rtsne.multicore(kmer,num_threads = threads,check_duplicates = F)
+    tsne_plot <- data.frame(x_tsne = tsne_out$Y[,1], y_tsne = tsne_out$Y[,2])
+    res <- cbind.data.frame(scaffold = as.character(names(assembly)), tsne_plot)
     out <- merge(x = out, y = res, by = "scaffold")
   }
   
